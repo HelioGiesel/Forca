@@ -5,11 +5,12 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class ServerWriter implements Runnable {
-
+    //Fields
     private Socket socket;
     private DataOutputStream write;
     private Scanner input;
 
+    //Constructor
     public ServerWriter(Socket socket) {
         this.socket = socket;
         input = new Scanner(System.in);

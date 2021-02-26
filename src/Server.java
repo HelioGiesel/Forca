@@ -7,12 +7,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server {
-
+    //Fields
     private ServerSocket serverSocket;
     private final ExecutorService fixedPool;
     private int portNumber;
     private LinkedList<UserHandler> list;
 
+    //Constructor
     public Server(LinkedList<UserHandler> list) throws IOException {
         this.list = list;
         serverSocket = new ServerSocket(setPortNumber());

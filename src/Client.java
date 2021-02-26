@@ -5,12 +5,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Client {
-
+    //Fields
     private final Socket socket;
     private final ExecutorService fixedPool;
     private String host;
     private int portNumber;
 
+    //Constructor
     public Client() throws IOException {
         setPortNumber();
         socket = new Socket(host, portNumber);

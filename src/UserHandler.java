@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.Scanner;
 
 public class UserHandler implements Runnable {
-
+    //Fields
     private final LinkedList<UserHandler> list;
     private final Socket serverSocket;
     private DataOutputStream write;
@@ -24,6 +24,7 @@ public class UserHandler implements Runnable {
     public static final String WHITE = "\033[0;37m";   // WHITE
     public static final String RESET = "\033[0m";  // Text Reset
 
+    //Constructor
     public UserHandler(Socket serverSocket, LinkedList<UserHandler> list)  {
         this.list = list;
         this.serverSocket = serverSocket;
