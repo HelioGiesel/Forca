@@ -23,8 +23,6 @@ public class ServerWriter implements Runnable {
             e.printStackTrace();
         }
 
-        /*System.out.println("Enter your username: ");
-        String userName = name.nextLine();*/
 
         while (true) {
 
