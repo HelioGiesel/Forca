@@ -1,15 +1,17 @@
+package org.academiadecodigo.forcau.client;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-public class ServerListener implements Runnable {
+public class ClientListener implements Runnable {
 
     private Socket socket;
     private BufferedReader read;
     private String lineRead = "";
 
-    public ServerListener(Socket socket) {
+    public ClientListener(Socket socket) {
         this.socket = socket;
     }
 

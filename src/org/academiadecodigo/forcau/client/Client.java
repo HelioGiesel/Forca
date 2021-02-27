@@ -1,3 +1,5 @@
+package org.academiadecodigo.forcau.client;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
@@ -24,11 +26,11 @@ public class Client {
      */
     public void start() {
 
-        System.out.println("Client started: " + socket);
-        System.out.println("Waiting for a server connection...");
+        System.out.println("org.academiadecodigo.forcau.client.Client started: " + socket);
+        System.out.println("Waiting for a org.academiadecodigo.forcau.server connection...");
 
-        ServerListener serverListener = new ServerListener(socket);
-        ServerWriter serverWriter = new ServerWriter(socket);
+        ClientListener serverListener = new ClientListener(socket);
+        ClientWriter serverWriter = new ClientWriter(socket);
 
         fixedPool.submit(serverWriter);
         fixedPool.submit(serverListener);

@@ -1,6 +1,9 @@
+package org.academiadecodigo.forcau.server;
+
+import org.academiadecodigo.forcau.Game;
+
 import java.io.*;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -9,11 +12,13 @@ public class UserHandler implements Runnable {
     private final LinkedList<UserHandler> list;
     private final Socket serverSocket;
     private DataOutputStream write;
+    private BufferedReader read;
     private Scanner userName;
     private String lineRead = "";
     private boolean isUserNameSet;
     private String name;
     private String currentColor = BLUE;
+    Game game;
     public static final String BLACK = "\033[0;30m";   // BLACK
     public static final String RED = "\033[0;31m";     // RED
     public static final String GREEN = "\033[0;32m";   // GREEN
@@ -25,7 +30,7 @@ public class UserHandler implements Runnable {
     public static final String RESET = "\033[0m";  // Text Reset
 
     //Constructor
-    public UserHandler(Socket serverSocket, LinkedList<UserHandler> list)  {
+    public UserHandler(Socket serverSocket, LinkedList<UserHandler> list) {
         this.list = list;
         this.serverSocket = serverSocket;
         try {
@@ -37,7 +42,6 @@ public class UserHandler implements Runnable {
     }
 
     /**
-     *
      * @return userName
      */
     private String getName() {
@@ -45,7 +49,6 @@ public class UserHandler implements Runnable {
     }
 
     /**
-     *
      * @return this outputStream
      */
     private OutputStream getOutputStream() {
@@ -59,6 +62,7 @@ public class UserHandler implements Runnable {
 
     /**
      * returns connection state
+     *
      * @return
      */
     private boolean isClosed() {
@@ -67,6 +71,7 @@ public class UserHandler implements Runnable {
 
     /**
      * iterates all users and sends message
+     *
      * @param message
      */
     public void broadCast(String message) {
@@ -80,6 +85,7 @@ public class UserHandler implements Runnable {
 
     /**
      * general message sender
+     *
      * @param message
      */
     private void dispatchMessage(String message) {
@@ -113,7 +119,7 @@ public class UserHandler implements Runnable {
     private void printOnlineUsers() { // NOT REMOVING OFFLINE USERS ***********************
         try {
             for (UserHandler user : list) {
-                if(user.isClosed()){
+                if (user.isClosed()) {
                     list.remove(user);
                 }
                 if (!(user.isClosed())) {
@@ -127,6 +133,7 @@ public class UserHandler implements Runnable {
 
     /**
      * receives string and change user's text color
+     *
      * @param color
      */
     private void setColor(String color) {
@@ -144,6 +151,7 @@ public class UserHandler implements Runnable {
 
     /**
      * receives "raw" message and removed the user's command tag
+     *
      * @param message
      * @return
      */
@@ -161,70 +169,133 @@ public class UserHandler implements Runnable {
      * lists all commands and chat functions
      */
     private void chatCommands() {
+            switch (lineRead) {
+                case "/help":
+                    help();
+                    break;
+                case "/setColor":
+                    setColor(removeCommandTag(lineRead));
+                    break;
+                case "/participants":
+                    printOnlineUsers();
+                    break;
+                case "/broadcast":
+                    broadCast(lineRead);
+                    break;
+                case "/start":
+                    start();
+                    break;
+                case "/join":
+                    join();
+                    break;
+            }
+    }
+
+    /**
+     * game start with options
+     */
+    private void start() {
         try {
-            if (lineRead.contains("/help")) {
+            write.writeBytes("1.Solo game\n" + "2.Multiplayer game");
+            String input = "";
+            while(!input.equals("1") && !input.equals("2")) {
+                input = read.readLine();
+                switch (input) {
+                    case "1":
+                        startSoloGame();
+                        break;
+                    case "2":
+                        startMultiGame();
+                        break;
+                    default:
+                        write.writeBytes("Please select option 1 or 2.");
+                        break;
+                }
+            }
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+    }
+
+    private void startSoloGame() {
+        game = new Game(this,1);
+    }
+
+    private void startMultiGame() {
+        broadCast("Multiplayer Game started by " + this.name + ". Type /join to join. You have 20 seconds.");
+        game = new Game(this, 2);
+    }
+
+    /**
+     * user join game
+     */
+    private void join() {
+        if (game.join(this)) {
+            broadCast(this.name + " joined game.");
+            return;
+        }
+        dispatchMessage("Game already full.");
+    }
+
+    /**
+         * identifies user by userName and sends given message
+         * @param message
+         */
+        private void privateMessage (String message){
+            try {
+                for (UserHandler user : list) {
+                    if (message.contains(user.getName())) {
+                        DataOutputStream privateWrite = new DataOutputStream(user.getOutputStream());
+                        privateWrite.writeBytes(currentColor + this.getName() + " PM: " + removeCommandTag(message) + "\n");
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    /**
+     * show help commands
+     */
+        public void help () {
+            try {
                 write.writeBytes("/help for help \n" +
                         "/setColor <color> for colors - Available Colors: \n" +
                         "BLACK -- RED -- GREEN -- YELLOW -- BLUE -- PURPLE -- CYAN -- WHITE\n" +
                         "/participants to see online users \n" +
                         "/pm/<name> for private message \n" +
                         "/broadCast to enter broadcast mode\n" +
+                        "/start to start a game\n" +
+                        "/join to join an active game\n" +
                         "/quit to quit \n");
-            } else if (lineRead.contains("/setColor")) {
-                setColor(removeCommandTag(lineRead));
-            } else if (lineRead.contains("/participants")) {
-                printOnlineUsers();
-            } else if (lineRead.contains("/pm")) {
-                privateMessage(lineRead);
-            } else if (lineRead.contains("/broadCast")) {
-                broadCast(lineRead);
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-    }
 
-    /**
-     * identifies user by userName and sends given message
-     * @param message
-     */
-    private void privateMessage(String message) {
-        try {
-            for (UserHandler user : list) {
-                if (message.contains(user.getName())) {
-                    DataOutputStream privateWrite = new DataOutputStream(user.getOutputStream());
-                    privateWrite.writeBytes(currentColor + this.getName() + " PM: " + removeCommandTag(message) + "\n");
+        @Override
+        public void run () {
+
+            try {
+                read = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
+                write = new DataOutputStream(serverSocket.getOutputStream());
+
+                write.writeBytes(GREEN + "Connection established \n" + RESET);
+                write.writeBytes(GREEN + "/help to see available commands \n" + RESET);
+                write.writeBytes("Please setup your username \n");
+                setUserName();
+                write.writeBytes("Please enter your message \n");
+
+                while (serverSocket.isBound()) {
+                    lineRead = read.readLine();
+                    System.out.println(lineRead);
+                    chatCommands();
                 }
+                read.close();
+                write.close();
+                serverSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
-
-    @Override
-    public void run() {
-
-        try {
-            BufferedReader read = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
-            write = new DataOutputStream(serverSocket.getOutputStream());
-
-            write.writeBytes(GREEN + "Connection established \n" + RESET);
-            write.writeBytes(GREEN + "/help to see available commands \n" + RESET);
-            write.writeBytes("Please setup your username \n");
-            setUserName();
-            write.writeBytes("Please enter your message \n");
-
-            while (serverSocket.isBound()) {
-                lineRead = read.readLine();
-                System.out.println(lineRead);
-                chatCommands();
-            }
-            read.close();
-            write.close();
-            serverSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-}

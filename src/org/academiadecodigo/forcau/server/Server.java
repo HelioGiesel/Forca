@@ -1,3 +1,5 @@
+package org.academiadecodigo.forcau.server;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -17,7 +19,7 @@ public class Server {
     public Server(LinkedList<UserHandler> list) throws IOException {
         this.list = list;
         serverSocket = new ServerSocket(setPortNumber());
-        fixedPool = Executors.newFixedThreadPool(2);
+        fixedPool = Executors.newFixedThreadPool(10);
         start();
     }
 
@@ -27,7 +29,7 @@ public class Server {
     public void start() {
         while (serverSocket.isBound()) {
             try {
-                System.out.println("Waiting for a client connection on PortNumber " + portNumber);
+                System.out.println("Waiting for a org.academiadecodigo.forcau.client connection on PortNumber " + portNumber);
                 UserHandler userHandler = new UserHandler(serverSocket.accept(), list);
                 fixedPool.submit(userHandler);
             } catch (IOException e) {
@@ -58,7 +60,7 @@ public class Server {
         Scanner sysIn = new Scanner(System.in);
         portNumber = 0;
         do{
-            System.out.print("Welcome ");
+            System.out.print("Welcome.\nPlease enter Port Number:");
             portNumber = sysIn.nextInt();
         } while (portNumber == 0);
         return portNumber;

@@ -1,17 +1,18 @@
-import java.io.BufferedReader;
+package org.academiadecodigo.forcau.client;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class ServerWriter implements Runnable {
+public class ClientWriter implements Runnable {
     //Fields
     private Socket socket;
     private DataOutputStream write;
     private Scanner input;
 
     //Constructor
-    public ServerWriter(Socket socket) {
+    public ClientWriter(Socket socket) {
         this.socket = socket;
         input = new Scanner(System.in);
     }
