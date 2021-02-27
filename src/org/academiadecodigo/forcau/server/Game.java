@@ -56,10 +56,18 @@ public class Game {
             String charGuessed = p1.getRead().readLine();
             p1.systemMessage(p1.getName() + " guessed " + charGuessed + ".");
             if(word.contains(charGuessed)){
+                boolean[] hiddenLetters = new boolean[word.length()];
                 for (int i = 0; i < wordChars.length; i++) {
-
+                    if(wordChars[i].equals(charGuessed)){
+                        hiddenLetters[i] = true;
+                    }
                 }
+                displayLetter(hiddenLetters, charGuessed);
+            } else{
+                System.out.println("A RUTE NAO ESTA AQUI");
+
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -112,6 +120,7 @@ public class Game {
         randomNumber = ((randomNumber % 2) == 0) ? randomNumber : randomNumber - 1;
         word = map.get(randomNumber);
         wordChars = word.split("");
+
         tips = map.get(randomNumber + 1);
 
         underscores();
@@ -125,6 +134,17 @@ public class Game {
         for (int i = 0; i < word.length(); i++) {
             underscores += "_ ";
         }
+    }
+
+    private void displayLetter(boolean[] hiddenLetters, String charGuessed){
+        char[] underToChar = underscores.toCharArray();
+        for (int i = 0; i < hiddenLetters.length; i++) {
+            if(hiddenLetters[i]){
+                underToChar[i*2] = charGuessed.charAt(0);
+            }
+        }
+        underscores = String.valueOf(underToChar);
+        System.out.println("A RUTE ESTÁ AQUI: " + underscores);
     }
 
 
