@@ -29,7 +29,7 @@ public class Server {
     public void start() {
         while (serverSocket.isBound()) {
             try {
-                System.out.println("Waiting for a org.academiadecodigo.forcau.client connection on PortNumber " + portNumber);
+                System.out.println("Waiting for a Client connection on PortNumber " + portNumber);
                 UserHandler userHandler = new UserHandler(serverSocket.accept(), list);
                 fixedPool.submit(userHandler);
             } catch (IOException e) {
@@ -62,6 +62,9 @@ public class Server {
         do{
             System.out.print("Welcome.\nPlease enter Port Number:");
             portNumber = sysIn.nextInt();
+            if (portNumber == 1){
+                portNumber = 16969;
+            }
         } while (portNumber == 0);
         return portNumber;
     }

@@ -26,8 +26,8 @@ public class Client {
      */
     public void start() {
 
-        System.out.println("org.academiadecodigo.forcau.client.Client started: " + socket);
-        System.out.println("Waiting for a org.academiadecodigo.forcau.server connection...");
+        System.out.println("Client started: " + socket);
+        System.out.println("Waiting for a server connection...");
 
         ClientListener serverListener = new ClientListener(socket);
         ClientWriter serverWriter = new ClientWriter(socket);
@@ -45,14 +45,20 @@ public class Client {
         }
     }
 
-    public void setPortNumber(){
+    public void setPortNumber() {
         Scanner sysIn = new Scanner(System.in);
-        do{
+        do {
             System.out.println("========= Welcome to ForcaU =========");
             System.out.print("Host: ");
             host = sysIn.nextLine();
+            if (host.equals("1")) {
+                host = "localhost";
+            }
             System.out.print("PortNumber: ");
             portNumber = sysIn.nextInt();
+            if (portNumber == 1) {
+                portNumber = 16969;
+            }
         } while (portNumber == 0 && host == null);
     }
 }

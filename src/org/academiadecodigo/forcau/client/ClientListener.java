@@ -18,13 +18,21 @@ public class ClientListener implements Runnable {
     @Override
     public void run() {
 
-        try { read = new BufferedReader(new InputStreamReader(socket.getInputStream())); }
-        catch (IOException e) { e.printStackTrace(); }
+        try {
+            read = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
 
         while (true) {
-            try { lineRead = read.readLine(); }
-            catch (IOException e) { e.printStackTrace(); }
-            System.err.println(lineRead);
+            try {
+                lineRead = read.readLine();
+                System.err.println(lineRead);
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
     }

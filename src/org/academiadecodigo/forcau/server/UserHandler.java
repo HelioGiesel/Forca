@@ -169,7 +169,7 @@ public class UserHandler implements Runnable {
      * lists all commands and chat functions
      */
     private void chatCommands() {
-            switch (lineRead) {
+            switch (lineRead.split(" ")[0]) {
                 case "/help":
                     help();
                     break;
@@ -196,19 +196,22 @@ public class UserHandler implements Runnable {
      */
     private void start() {
         try {
-            write.writeBytes("1.Solo game\n" + "2.Multiplayer game");
-            String input = "";
+            write.writeBytes("1. Solo game \n" + "2. Multiplayer game \n");
+            write.flush();
+            String input = "lol";
             while(!input.equals("1") && !input.equals("2")) {
                 input = read.readLine();
                 switch (input) {
                     case "1":
                         startSoloGame();
+//                        broadCast();
                         break;
                     case "2":
                         startMultiGame();
                         break;
                     default:
-                        write.writeBytes("Please select option 1 or 2.");
+                        write.writeBytes("Please select option 1 or 2.\n");
+                        write.flush();
                         break;
                 }
             }
@@ -218,12 +221,14 @@ public class UserHandler implements Runnable {
     }
 
     private void startSoloGame() {
-        game = new Game(this,1);
+        broadCast("Soloplayer game started by " + this.name + ".");
+        game = new Game(this,false, write, read);
+
     }
 
     private void startMultiGame() {
         broadCast("Multiplayer Game started by " + this.name + ". Type /join to join. You have 20 seconds.");
-        game = new Game(this, 2);
+        game = new Game(this, true,write,read);
     }
 
     /**
@@ -234,7 +239,7 @@ public class UserHandler implements Runnable {
             broadCast(this.name + " joined game.");
             return;
         }
-        dispatchMessage("Game already full.");
+        dispatchMessage("Game already started. Please wait!");
     }
 
     /**
@@ -264,7 +269,7 @@ public class UserHandler implements Runnable {
                         "BLACK -- RED -- GREEN -- YELLOW -- BLUE -- PURPLE -- CYAN -- WHITE\n" +
                         "/participants to see online users \n" +
                         "/pm/<name> for private message \n" +
-                        "/broadCast to enter broadcast mode\n" +
+                        "/broadcast to enter broadcast mode\n" +
                         "/start to start a game\n" +
                         "/join to join an active game\n" +
                         "/quit to quit \n");
