@@ -1,7 +1,5 @@
 package org.academiadecodigo.forcau.server;
 
-import org.academiadecodigo.forcau.Game;
-
 import java.io.*;
 import java.net.Socket;
 import java.util.LinkedList;
@@ -44,7 +42,7 @@ public class UserHandler implements Runnable {
     /**
      * @return userName
      */
-    private String getName() {
+    public String getName() {
         return name;
     }
 
@@ -58,6 +56,22 @@ public class UserHandler implements Runnable {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public DataOutputStream getWrite() {
+        return write;
+    }
+
+    public void setWrite(DataOutputStream write) {
+        this.write = write;
+    }
+
+    public BufferedReader getRead() {
+        return read;
+    }
+
+    public void setRead(BufferedReader read) {
+        this.read = read;
     }
 
     /**
@@ -81,6 +95,13 @@ public class UserHandler implements Runnable {
                 user.dispatchMessage(serverMsg);
             }
         }
+    }
+
+    public void systemMessage(String message){
+        for (UserHandler user : list) {
+            user.dispatchMessage(message);
+        }
+
     }
 
     /**
@@ -222,13 +243,13 @@ public class UserHandler implements Runnable {
 
     private void startSoloGame() {
         broadCast("Soloplayer game started by " + this.name + ".");
-        game = new Game(this,false, write, read);
+        game = new Game(this,false);
 
     }
 
     private void startMultiGame() {
         broadCast("Multiplayer Game started by " + this.name + ". Type /join to join. You have 20 seconds.");
-        game = new Game(this, true,write,read);
+        game = new Game(this, true);
     }
 
     /**
@@ -278,6 +299,7 @@ public class UserHandler implements Runnable {
             }
         }
 
+
         @Override
         public void run () {
 
@@ -293,7 +315,7 @@ public class UserHandler implements Runnable {
 
                 while (serverSocket.isBound()) {
                     lineRead = read.readLine();
-                    System.out.println(lineRead);
+                    //System.out.println(lineRead);
                     chatCommands();
                 }
                 read.close();
@@ -303,4 +325,5 @@ public class UserHandler implements Runnable {
                 e.printStackTrace();
             }
         }
+
     }

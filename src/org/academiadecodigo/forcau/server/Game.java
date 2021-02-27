@@ -1,4 +1,4 @@
-package org.academiadecodigo.forcau;
+package org.academiadecodigo.forcau.server;
 
 import org.academiadecodigo.forcau.server.UserHandler;
 
@@ -16,10 +16,14 @@ public class Game {
     private boolean start;
     private List<String> map;
     private String word;
+    private String[] wordChars;
     private String tips;
     private DataOutputStream write;
     private BufferedReader read;
     private String underscores;
+    private final int maxTries = 5;
+    private int charactersGuessed;
+    private int tries;
 
     /**
      * Creates game and adds first player
@@ -29,34 +33,39 @@ public class Game {
      * @param firstPlayer
      * @param multiplayer
      */
-    public Game(UserHandler firstPlayer, boolean multiplayer, DataOutputStream dataOutputStream, BufferedReader bufferedReader) {
+    public Game(UserHandler firstPlayer, boolean multiplayer) {
         System.out.println("Entered Game");
         players = new LinkedList<>();
         players.add(firstPlayer);
         this.multiplayer = multiplayer;
-        write = dataOutputStream;
-        read = bufferedReader;
+        write = firstPlayer.getWrite();
+        read = firstPlayer.getRead();
         map = new ArrayList<>();
         start();
     }
 
     public void start() {
+        UserHandler p1 = players.get(0);
+        readfile();
+        p1.systemMessage("The word has " + randomWord() + " characters.");
+        p1.systemMessage(underscores);
+
+        //First try
+        p1.systemMessage(p1.getName() + " pick a character.");
         try {
-            readfile();
-            write.writeBytes("The word has " + randomWord() + " characters.\n");
-            underscores();
-            write.writeBytes(underscores +"\n");
-            write.flush();
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
+            String charGuessed = p1.getRead().readLine();
+            p1.systemMessage(p1.getName() + " guessed " + charGuessed + ".");
+            if(word.contains(charGuessed)){
+                for (int i = 0; i < wordChars.length; i++) {
+
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        if (!multiplayer) {
 
-            return;
-        }
 
-        System.out.println("deu merda");
     }
 
 
@@ -96,20 +105,29 @@ public class Game {
         }
 
     }
+
     private int randomWord(){
 
         int randomNumber = (int) (Math.random() * map.size());
         randomNumber = ((randomNumber % 2) == 0) ? randomNumber : randomNumber - 1;
         word = map.get(randomNumber);
+        wordChars = word.split("");
         tips = map.get(randomNumber + 1);
 
+        underscores();
         return word.length();
 
+
     }
+
     private void underscores(){
         underscores = "";
         for (int i = 0; i < word.length(); i++) {
             underscores += "_ ";
         }
     }
+
+
+
+
 }
