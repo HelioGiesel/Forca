@@ -21,9 +21,10 @@ public class Game {
     private DataOutputStream write;
     private BufferedReader read;
     private String underscores;
-    private final int maxTries = 5;
-    private int charactersGuessed;
-    private int tries;
+    private final int maxTries = 10;
+    private int charactersGuessed = 0;
+    private int tries = 0;
+    private String charactersNotGuessed = "";
 
     /**
      * Creates game and adds first player
@@ -51,31 +52,59 @@ public class Game {
         p1.systemMessage(underscores);
 
         //First try
-        p1.systemMessage(p1.getName() + " pick a character.");
-        try {
-            String charGuessed = p1.getRead().readLine();
-            p1.systemMessage(p1.getName() + " guessed " + charGuessed + ".");
-            if(word.contains(charGuessed)){
-                boolean[] hiddenLetters = new boolean[word.length()];
-                for (int i = 0; i < wordChars.length; i++) {
-                    if(wordChars[i].equals(charGuessed)){
-                        hiddenLetters[i] = true;
-                    }
+        while (charactersGuessed < word.length() && tries < maxTries) {
+            try {
+                String charGuessed = "";
+
+                if (charactersNotGuessed.equals("")) {
+                    p1.systemMessage(p1.getName() + " pick a character");
+                } else {
+                    p1.systemMessage(p1.getName() + " pick a character. Already tried: " + charactersNotGuessed );
                 }
-                displayLetter(hiddenLetters, charGuessed);
-            } else{
-                System.out.println("A RUTE NAO ESTA AQUI");
-
+                charGuessed = p1.getRead().readLine();
+                p1.systemMessage(p1.getName() + " tried " + charGuessed + ".");
+                if (underscores.contains(charGuessed)) {
+                    p1.systemMessage(p1.getName() + " that character has already been tried bro.");
+                    continue;
+                }
+                checkChar(charGuessed);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-
-
-
+        if (charactersGuessed == word.length()) {
+            players.get(0).systemMessage(players.get(0).getName() + " you have won bro.");
+        } else {
+            players.get(0).systemMessage(players.get(0).getName() + " you have failed bro! iei");
+        }
+        restart();
     }
 
+    public void restart() {
+        for (int i = players.size(); i >= 0; i--) {
+            players.remove(players.get(i));
+        }
+        tries = 0;
+        charactersGuessed = 0;
+    }
+
+    public void checkChar(String charGuessed) {
+        if(word.contains(charGuessed)){
+            boolean[] hiddenLetters = new boolean[word.length()];
+            for (int i = 0; i < wordChars.length; i++) {
+                if(wordChars[i].equals(charGuessed)){
+                    hiddenLetters[i] = true;
+                    charactersGuessed++;
+                }
+            }
+            displayLetter(hiddenLetters, charGuessed);
+            players.get(0).systemMessage("Character " + charGuessed + " found!\n" + underscores);
+        } else {
+                players.get(0).systemMessage(charGuessed + " is not on the word bro :(");
+                charactersNotGuessed += charGuessed + ", ";
+                tries++;
+            }
+        }
 
     public boolean join(UserHandler newPlayer) {
         if (start) return false;
@@ -83,6 +112,9 @@ public class Game {
         return true;
     }
 
+    /**
+     * read word file
+     */
     private void readfile() {
 
         try {
@@ -107,13 +139,15 @@ public class Game {
                 map.add(dica);
             }
 
-
         } catch (IOException ioException) {
             System.out.println("I hate exceptions");
         }
-
     }
 
+    /**
+     * Pick a random word and generate underscore string
+     * @return
+     */
     private int randomWord(){
 
         int randomNumber = (int) (Math.random() * map.size());
@@ -132,6 +166,10 @@ public class Game {
     private void underscores(){
         underscores = "";
         for (int i = 0; i < word.length(); i++) {
+            if (i == word.length() - 1) {
+                underscores += "_";
+                return;
+            }
             underscores += "_ ";
         }
     }
@@ -144,10 +182,6 @@ public class Game {
             }
         }
         underscores = String.valueOf(underToChar);
-        System.out.println("A RUTE ESTÁ AQUI: " + underscores);
     }
-
-
-
 
 }

@@ -109,7 +109,7 @@ public class UserHandler implements Runnable {
      *
      * @param message
      */
-    private void dispatchMessage(String message) {
+    public void dispatchMessage(String message) {
         try {
             write.writeBytes(message + "\n");
             write.flush();
