@@ -305,6 +305,7 @@ public class UserHandler implements Runnable {
     }
 
     public void logicMenu() {
+
         try {
             while (serverSocket.isBound()) {
                 lineRead = read.readLine();

@@ -60,7 +60,7 @@ public class KeyboardController implements KeyboardHandler {
                 KeyboardEvent.KEY_X,
                 KeyboardEvent.KEY_Y,
                 KeyboardEvent.KEY_Z,
-                KeyboardEvent.KEY_SPACE
+                KeyboardEvent.KEY_SPACE,
         };
     }
 

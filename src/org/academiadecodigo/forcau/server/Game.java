@@ -31,8 +31,8 @@ public class Game {
      * Gametype 1: one player
      * Gametype 2: multiplayer
      *
-     * @param firstPlayer
-     * @param multiplayer
+     * @param
+     * @param
      */
     public Game() {
 
@@ -246,6 +246,7 @@ public class Game {
         if (charGuessed.equals(word)) {
             p1.systemMessage("\n" + Color.GREEN_BOLD + players.get(0).getName() + " you have won bro." + Color.RESET);
             restart();
+            start = false;
             return true;
         }
         return false;
