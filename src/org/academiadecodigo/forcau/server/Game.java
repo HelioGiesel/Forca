@@ -96,6 +96,7 @@ public class Game {
         if (players.size() == 1){
             p1.dispatchMessage(Color.RED_BOLD + "\nNobody entered your game bro\nYou will return to initial menu."  + Color.RESET);
             p1.broadCast(Color.RED_BOLD + "Game didn't had enough players to start." + Color.RESET);
+
             restart();
             return;
         }else {
