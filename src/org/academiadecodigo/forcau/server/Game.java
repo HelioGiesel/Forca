@@ -43,7 +43,6 @@ public class Game {
         usedCharacters = new HashSet<>();
         p1 = players.get(0);
         start = false;
-        start();
 
     }
 
@@ -67,76 +66,49 @@ public class Game {
         readfile();
         p1.systemMessage(Color.PURPLE_BOLD + "The word has " + randomWord() + " characters." + Color.RESET);
         p1.systemMessage(Color.PURPLE_BOLD + underscores + Color.RESET);
-        int counter = 0;
-        //First try
-        while (charactersGuessed < word.length() && tries < maxTries) {
-            try {
-                charGuessed = "";
 
-                if (charactersNotGuessed.equals("")) {
-                    p1.systemMessage(Color.CYAN + p1.getName() + " pick a character" + Color.RESET);
-                } else {
-                    p1.systemMessage(Color.CYAN + p1.getName() + " pick a character. Already tried: " + charactersNotGuessed + Color.RESET);
-                }
-
-                charGuessed = players.get(counter).getRead().readLine();
-                p1.systemMessage(Color.YELLOW + p1.getName() + " tried " + charGuessed + "." + Color.RESET);
-
-                if (correctAnswer()) {
-                    break;
-                }
-
-                if (alreadyTried()) {
-                    continue;
-                }
-
-                checkChar(charGuessed);
-
-                if (counter < players.size() - 1){
-                    counter++;
-
-                } else {
-
-                    counter = 0;
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
+        gameLogic();
         gameFinal();
         restart();
     }
 
     private void multiplayerGame(){
 
-        int countDown = 10;
+        int countDown = 5;
 
         while (countDown >= 0) {
             try {
-                if (countDown <= 10) {
-                    p1.systemMessage(Color.RED + "Players have: " + countDown + " seconds to join" + Color.RESET);
+                if (countDown < 10) {
+                    p1.dispatchMessage(Color.RED + "Players have: " + countDown + " seconds to join" + Color.RESET);
                     Thread.sleep(1000);
+                    countDown--;
                 } else {
-                    p1.systemMessage(Color.GREEN + "Players have: " + countDown + " seconds to join" + Color.RESET);
+                    p1.dispatchMessage(Color.GREEN + "Players have: " + countDown + " seconds to join" + Color.RESET);
                     Thread.sleep(5000);
+                    countDown = countDown - 5;
                 }
-                countDown--;
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
 
         if (players.size() == 1){
-            p1.systemMessage(Color.RED_BOLD + "\nNobody entered your game bro\nYou will return to initial menu."  + Color.RESET);
+            p1.dispatchMessage(Color.RED_BOLD + "\nNobody entered your game bro\nYou will return to initial menu."  + Color.RESET);
+            p1.broadCast(Color.RED_BOLD + "Game didn't had enough players to start." + Color.RESET);
             restart();
             return;
+        }else {
+            p1.systemMessage(Color.GREEN_BOLD + "Game started BRO" + Color.RESET+ "\n");
         }
 
+        readfile();
 
+        p1.systemMessage(Color.PURPLE_BOLD + "The word has " + randomWord() + " characters." + Color.RESET);
+        p1.systemMessage(Color.PURPLE_BOLD + underscores + Color.RESET);
 
-
+        gameLogic();
+        gameFinal();
+        restart();
     }
 
     public void restart() {
@@ -149,8 +121,9 @@ public class Game {
 
         for (int i = players.size(); i > 0; i--) {
 
-            players.get(i-1).dispatchMessage("\n\n");
+            players.get(i-1).dispatchMessage("\n");
             players.get(i-1).startMenu();
+
 
         }
     }
@@ -298,6 +271,51 @@ public class Game {
 
     }
 
+    private void gameLogic(){
+        int counter = 0;
+        while (charactersGuessed < word.length() && tries < maxTries) {
+            try {
+                charGuessed = "";
+
+                if (charactersNotGuessed.equals("")) {
+                    p1.systemMessage(Color.CYAN + players.get(counter).getName() + " pick a character" + Color.RESET);
+                } else {
+                    p1.systemMessage(Color.CYAN + players.get(counter).getName() + " pick a character. Already tried: " + charactersNotGuessed + Color.RESET);
+                }
+
+                charGuessed = players.get(counter).getRead().readLine();
+                p1.systemMessage(Color.YELLOW + players.get(counter).getName() + " tried " + charGuessed + "." + Color.RESET);
+
+                if (correctAnswer()) {
+                    break;
+                }
+
+                if (alreadyTried()) {
+
+                    if (counter < players.size() - 1){
+                        counter++;
+
+                    } else {
+                        counter = 0;
+                    }
+
+                    continue;
+                }
+
+                checkChar(charGuessed);
+
+                if (counter < players.size() - 1){
+                    counter++;
+
+                } else {
+                    counter = 0;
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 
 

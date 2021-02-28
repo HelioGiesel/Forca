@@ -10,9 +10,9 @@ import java.util.Vector;
 
 public class UserHandler implements Runnable {
     //Fields
-    private final LinkedList<UserHandler> list;
+    private LinkedList<UserHandler> list;
     private Vector<Game> vector;
-    private final Socket serverSocket;
+    private Socket serverSocket;
     private Scanner userName;
     private String currentColor = Color.BLUE;
     private String lineRead = "";
@@ -24,10 +24,10 @@ public class UserHandler implements Runnable {
 
 
     //Constructor
-    public UserHandler(Socket serverSocket, LinkedList<UserHandler> list) {
+    public UserHandler(Socket serverSocket, LinkedList<UserHandler> list, Vector<Game> vector) {
         this.list = list;
         this.serverSocket = serverSocket;
-        vector = new Vector<>();
+        this.vector = vector;
         try {
             userName = new Scanner(serverSocket.getInputStream());
             list.add(this);
@@ -80,7 +80,7 @@ public class UserHandler implements Runnable {
     public void broadCast(String message) {
         for (UserHandler user : list) {
             if (user != this) {
-                String serverMsg = (currentColor + this.getName() + " Broadcasts: " + removeCommandTag(message));
+                String serverMsg = (this.getName() + " Broadcasts: " + message);
                 user.dispatchMessage(serverMsg);
             }
         }
@@ -141,21 +141,6 @@ public class UserHandler implements Runnable {
         }
     }
 
-    /**
-     * receives "raw" message and removed the user's command tag
-     *
-     * @param message
-     * @return
-     */
-    private String removeCommandTag(String message) {
-        String[] newMsg = message.split(" ");
-        String finalMsg = "";
-        for (int i = 1; i < newMsg.length; i++) {
-            finalMsg = finalMsg.concat(newMsg[i] + " ");
-        }
-        System.out.println(finalMsg);
-        return finalMsg;
-    }
 
     /**
      * lists all commands and chat functions
@@ -167,9 +152,6 @@ public class UserHandler implements Runnable {
                 break;
             case "/participants":
                 printOnlineUsers();
-                break;
-            case "/broadcast":
-                broadCast(lineRead);
                 break;
             case "/start":
                 start();
@@ -240,13 +222,14 @@ public class UserHandler implements Runnable {
     private void startSoloGame() {
         broadCast("Soloplayer game started by " + this.name + ".");
         game = new Game(this, false);
-        vector.add(game);
+        game.start();
     }
 
     private void startMultiGame() {
         broadCast("Multiplayer Game started by " + this.name + ". Type /join to join. You have 20 seconds.");
         game = new Game(this, true);
         vector.add(game);
+        game.start();
     }
 
     /**
@@ -254,8 +237,11 @@ public class UserHandler implements Runnable {
      */
     private void join() {
         System.out.println("teste");
-        if (vector.get(0) != null) {
+        System.out.println(vector.size());
+        if (vector.size() != 0) {
+            System.out.println("teste vector null");
             if (vector.get(0).join(this)) {
+                System.out.println("teste vector join");
                 broadCast(this.name + " joined game.");
                 return;
             }
@@ -266,32 +252,12 @@ public class UserHandler implements Runnable {
     }
 
     /**
-     * identifies user by userName and sends given message
-     *
-     * @param message
-     */
-    private void privateMessage(String message) {
-        try {
-            for (UserHandler user : list) {
-                if (message.contains(user.getName())) {
-                    DataOutputStream privateWrite = new DataOutputStream(user.getOutputStream());
-                    privateWrite.writeBytes(currentColor + this.getName() + " PM: " + removeCommandTag(message) + "\n");
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
      * show help commands
      */
     public void help() {
         try {
             write.writeBytes("/help for help \n" +
                     "/participants to see online users \n" +
-                    "/pm/<name> for private message \n" +
-                    "/broadcast to enter broadcast mode\n" +
                     "/start to start a game\n" +
                     "/join to join an active game\n" +
                     "/quit to quit \n");
@@ -320,6 +286,7 @@ public class UserHandler implements Runnable {
             write.writeBytes("Please setup your username \n");
             setUserName();
             startMenu();
+            logicMenu();
 
 
         } catch (IOException e) {
@@ -328,15 +295,24 @@ public class UserHandler implements Runnable {
 
     }
 
-    public void startMenu(){
+    public void startMenu() {
         try {
 
-            if(vector != null){
+            if (vector != null) {
                 vector.clear();
             }
 
             write.writeBytes(Color.GREEN_BOLD + "Please enter your message \n" + Color.RESET);
 
+
+        } catch (IOException io) {
+            System.out.println("Caseio yo yo");
+        }
+
+    }
+
+    public void logicMenu() {
+        try {
             while (serverSocket.isBound()) {
                 lineRead = read.readLine();
                 //System.out.println(lineRead);
@@ -345,9 +321,9 @@ public class UserHandler implements Runnable {
             read.close();
             write.close();
             serverSocket.close();
-        } catch (IOException e){
+        } catch (
+                IOException e) {
             e.printStackTrace();
         }
     }
-
 }
