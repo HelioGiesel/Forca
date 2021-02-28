@@ -6,10 +6,12 @@ import java.io.*;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.Scanner;
+import java.util.Vector;
 
 public class UserHandler implements Runnable {
     //Fields
     private final LinkedList<UserHandler> list;
+    private Vector<Game> vector;
     private final Socket serverSocket;
     private Scanner userName;
     private String currentColor = Color.BLUE;
@@ -25,6 +27,7 @@ public class UserHandler implements Runnable {
     public UserHandler(Socket serverSocket, LinkedList<UserHandler> list) {
         this.list = list;
         this.serverSocket = serverSocket;
+        vector = new Vector<>();
         try {
             userName = new Scanner(serverSocket.getInputStream());
             list.add(this);
@@ -83,7 +86,7 @@ public class UserHandler implements Runnable {
         }
     }
 
-    public void systemMessage(String message){
+    public void systemMessage(String message) {
         for (UserHandler user : list) {
             user.dispatchMessage(message);
         }
@@ -137,6 +140,7 @@ public class UserHandler implements Runnable {
             e.printStackTrace();
         }
     }
+
     /**
      * receives "raw" message and removed the user's command tag
      *
@@ -157,35 +161,36 @@ public class UserHandler implements Runnable {
      * lists all commands and chat functions
      */
     private void chatCommands() {
-            switch (lineRead.split(" ")[0]) {
-                case "/help":
-                    help();
-                    break;
-                case "/participants":
-                    printOnlineUsers();
-                    break;
-                case "/broadcast":
-                    broadCast(lineRead);
-                    break;
-                case "/start":
-                    start();
-                    break;
-                case "/join":
-                    join();
-                    break;
-            }
+        switch (lineRead.split(" ")[0]) {
+            case "/help":
+                help();
+                break;
+            case "/participants":
+                printOnlineUsers();
+                break;
+            case "/broadcast":
+                broadCast(lineRead);
+                break;
+            case "/start":
+                start();
+                break;
+            case "/join":
+                join();
+                break;
+        }
     }
 
     /**
      * game start with options
      */
-    private void start() {
+    public void start() {
+
         chooseWordsList();
         try {
             write.writeBytes(Color.RED_BOLD + "1. Solo game \n" + "2. Multiplayer game \n" + Color.RESET);
             write.flush();
             String input = "lol";
-            while(!input.equals("1") && !input.equals("2")) {
+            while (!input.equals("1") && !input.equals("2")) {
                 input = read.readLine();
                 switch (input) {
                     case "1":
@@ -205,23 +210,19 @@ public class UserHandler implements Runnable {
         }
     }
 
-    private void chooseWordsList(){
-        try{
-            write.writeBytes("1. Fabio Mode \n" + "2. Academy Mode \n");
+    private void chooseWordsList() {
+        try {
+            write.writeBytes(Color.RED_BOLD + "1. Fabio Mode \n" + "2. Academy Mode \n" + Color.RESET);
             write.flush();
             String input = null;
-            while(input == null || !input.equals("1") && !input.equals("2")){
+            while (input == null || !input.equals("1") && !input.equals("2")) {
                 input = read.readLine();
-                switch (input){
+                switch (input) {
                     case "1":
-                        System.out.println("TESTE CASE 1");
                         Game.setListPath("resources/foulWordsList.txt");
-                        System.out.println("TESTE CASE 1.1");
                         break;
                     case "2":
-                        System.out.println("TESTE CASE 2");
                         Game.setListPath("resources/ac_mode.txt");
-                        System.out.println("TESTE CASE 2.1");
                         break;
                     default:
                         write.writeBytes(Color.RED_BOLD + "Please select option 1 or 2.\n" + Color.RESET);
@@ -230,7 +231,7 @@ public class UserHandler implements Runnable {
                 }
 
             }
-        } catch (IOException error){
+        } catch (IOException error) {
             error.printStackTrace();
         }
 
@@ -238,85 +239,117 @@ public class UserHandler implements Runnable {
 
     private void startSoloGame() {
         broadCast("Soloplayer game started by " + this.name + ".");
-        game = new Game(this,false);
+        game = new Game(this, false);
+        vector.add(game);
 
     }
 
     private void startMultiGame() {
         broadCast("Multiplayer Game started by " + this.name + ". Type /join to join. You have 20 seconds.");
         game = new Game(this, true);
+        vector.add(game);
+
     }
 
     /**
      * user join game
      */
     private void join() {
-        if (game.join(this)) {
-            broadCast(this.name + " joined game.");
-            return;
+        System.out.println("teste");
+        if (vector.get(0) != null) {
+            if (vector.get(0).join(this)) {
+                broadCast(this.name + " joined game.");
+                return;
+            }
+            dispatchMessage("Game already started. Please wait!");
+        } else {
+            systemMessage("You have to start a game first");
         }
-        dispatchMessage("Game already started. Please wait!");
     }
 
     /**
-         * identifies user by userName and sends given message
-         * @param message
-         */
-        private void privateMessage (String message){
-            try {
-                for (UserHandler user : list) {
-                    if (message.contains(user.getName())) {
-                        DataOutputStream privateWrite = new DataOutputStream(user.getOutputStream());
-                        privateWrite.writeBytes(currentColor + this.getName() + " PM: " + removeCommandTag(message) + "\n");
-                    }
+     * identifies user by userName and sends given message
+     *
+     * @param message
+     */
+    private void privateMessage(String message) {
+        try {
+            for (UserHandler user : list) {
+                if (message.contains(user.getName())) {
+                    DataOutputStream privateWrite = new DataOutputStream(user.getOutputStream());
+                    privateWrite.writeBytes(currentColor + this.getName() + " PM: " + removeCommandTag(message) + "\n");
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
 
     /**
      * show help commands
      */
-        public void help () {
-            try {
-                write.writeBytes("/help for help \n" +
-                        "/participants to see online users \n" +
-                        "/pm/<name> for private message \n" +
-                        "/broadcast to enter broadcast mode\n" +
-                        "/start to start a game\n" +
-                        "/join to join an active game\n" +
-                        "/quit to quit \n");
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
+    public void help() {
+        try {
+            write.writeBytes("/help for help \n" +
+                    "/participants to see online users \n" +
+                    "/pm/<name> for private message \n" +
+                    "/broadcast to enter broadcast mode\n" +
+                    "/start to start a game\n" +
+                    "/join to join an active game\n" +
+                    "/quit to quit \n");
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
         }
+    }
+
+    @Override
+    public void run() {
+
+        beginServer();
+        startMenu();
+
+    }
+
+    public void beginServer() {
+
+        try {
+
+            read = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
+            write = new DataOutputStream(serverSocket.getOutputStream());
+
+            write.writeBytes(Color.GREEN + "Connection established \n" + Color.RESET);
+            write.writeBytes(Color.GREEN + "/help to see available commands \n" + Color.RESET);
+            write.writeBytes("Please setup your username \n");
+            setUserName();
+            startMenu();
 
 
-        @Override
-        public void run () {
-
-            try {
-                read = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
-                write = new DataOutputStream(serverSocket.getOutputStream());
-
-                write.writeBytes(Color.GREEN + "Connection established \n" + Color.RESET);
-                write.writeBytes(Color.GREEN + "/help to see available commands \n" + Color.RESET);
-                write.writeBytes("Please setup your username \n");
-                setUserName();
-                write.writeBytes(Color.GREEN_BOLD + "Please enter your message \n" + Color.RESET);
-
-                while (serverSocket.isBound()) {
-                    lineRead = read.readLine();
-                    //System.out.println(lineRead);
-                    chatCommands();
-                }
-                read.close();
-                write.close();
-                serverSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
+
+    public void startMenu(){
+        try {
+
+            if(vector != null){
+                vector.clear();
+            }
+
+            write.writeBytes(Color.GREEN_BOLD + "Please enter your message \n" + Color.RESET);
+
+            while (serverSocket.isBound()) {
+                lineRead = read.readLine();
+                //System.out.println(lineRead);
+                chatCommands();
+            }
+            read.close();
+            write.close();
+            serverSocket.close();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+}

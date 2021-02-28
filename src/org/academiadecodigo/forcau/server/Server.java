@@ -60,7 +60,7 @@ public class Server {
         Scanner sysIn = new Scanner(System.in);
         portNumber = 0;
         do{
-            System.out.print("Welcome.\nPlease enter Port Number:");
+            System.out.print("Welcome.\nPlease enter Port Number: ");
             portNumber = sysIn.nextInt();
             if (portNumber == 1){
                 portNumber = 16969;

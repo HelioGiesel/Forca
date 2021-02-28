@@ -43,6 +43,7 @@ public class Game {
         map = new ArrayList<>();
         usedCharacters = new HashSet<>();
         p1 = players.get(0);
+        start = false;
         start();
 
     }
@@ -55,11 +56,19 @@ public class Game {
     //Custom Methods
     public void start() {
 
+        if (!multiplayer) {
+            soloGame();
+        } else{
+            multiplayerGame();
+        }
 
+    }
+
+    private void soloGame(){
         readfile();
         p1.systemMessage(Color.PURPLE_BOLD + "The word has " + randomWord() + " characters." + Color.RESET);
         p1.systemMessage(Color.PURPLE_BOLD + underscores + Color.RESET);
-
+        int counter = 0;
         //First try
         while (charactersGuessed < word.length() && tries < maxTries) {
             try {
@@ -71,18 +80,26 @@ public class Game {
                     p1.systemMessage(Color.CYAN + p1.getName() + " pick a character. Already tried: " + charactersNotGuessed + Color.RESET);
                 }
 
-                charGuessed = p1.getRead().readLine();
+                charGuessed = players.get(counter).getRead().readLine();
                 p1.systemMessage(Color.YELLOW + p1.getName() + " tried " + charGuessed + "." + Color.RESET);
 
-                if (correctAwnser()){
-                  break;
+                if (correctAwnser()) {
+                    break;
                 }
 
-                if (alreadyTried()){
+                if (alreadyTried()) {
                     continue;
                 }
 
                 checkChar(charGuessed);
+
+                if (counter < players.size() - 1){
+                    counter++;
+
+                } else {
+
+                    counter = 0;
+                }
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -91,18 +108,52 @@ public class Game {
 
         gameFinal();
         restart();
+    }
+
+    private void multiplayerGame(){
+
+        int countDown = 10;
+
+        while (countDown >= 0) {
+            try {
+                if (countDown <= 10) {
+                    p1.systemMessage(Color.RED + "Players have: " + countDown + " seconds to join" + Color.RESET);
+                    Thread.sleep(1000);
+                } else {
+                    p1.systemMessage(Color.GREEN + "Players have: " + countDown + " seconds to join" + Color.RESET);
+                    Thread.sleep(5000);
+                }
+                countDown--;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (players.size() == 1){
+            p1.systemMessage(Color.RED_BOLD + "\nNobody entered your game bro\nYou will return to initial menu."  + Color.RESET);
+            restart();
+            return;
+        }
+
+
+
 
     }
 
     public void restart() {
 
-        for (int i = players.size(); i >= 0; i--) {
-            players.remove(players.get(i));
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
-        tries = 0;
-        charactersGuessed = 0;
+        for (int i = players.size(); i > 0; i--) {
 
+            players.get(i-1).dispatchMessage("\n\n");
+            players.get(i-1).startMenu();
+
+        }
     }
 
     public void checkChar(String charGuessed) {
@@ -130,7 +181,11 @@ public class Game {
 
     public boolean join(UserHandler newPlayer) {
 
-        if (start) return false;
+        if (start){
+            return false;
+        }
+
+        System.out.println("oi");
         players.add(newPlayer);
         return true;
 
@@ -213,10 +268,12 @@ public class Game {
         }
         underscores = String.valueOf(underToChar);
     }
+
     private boolean correctAwnser(){
 
         if (charGuessed.equals(word)) {
             p1.systemMessage("\n" + Color.GREEN_BOLD + players.get(0).getName() + " you have won bro." + Color.RESET);
+            restart();
             return true;
         }
         return false;
@@ -241,4 +298,8 @@ public class Game {
         }
 
     }
+
+
+
+
 }
