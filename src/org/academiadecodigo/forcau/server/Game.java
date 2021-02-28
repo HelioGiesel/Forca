@@ -293,6 +293,17 @@ public class Game {
         int counter = 0;
 
         while (charactersGuessed < word.length() && tries < maxTries) {
+//            try {
+//                if(players.get(counter).getRead().readLine() == null){
+//                    players.remove(counter);
+//                    if(counter == players.size() - 1 ){
+//                        counter = 0;
+//                    }
+//                    continue;
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
             try {
                 charGuessed = "";
 
@@ -302,6 +313,13 @@ public class Game {
                     p1.systemMessage(Color.CYAN + players.get(counter).getName() + " pick a character. Already tried: " + charactersNotGuessed + Color.RESET);
                 }
                 charGuessed = players.get(counter).getRead().readLine();
+                if(charGuessed == null){
+                    players.remove(counter);
+                    if(counter == players.size() - 1 ){
+                        counter = 0;
+                    }
+                    continue;
+                }
                 p1.systemMessage(Color.YELLOW + players.get(counter).getName() + " tried " + charGuessed + "." + Color.RESET);
 
                 if (correctAnswer()) {

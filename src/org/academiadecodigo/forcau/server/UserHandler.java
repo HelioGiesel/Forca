@@ -62,6 +62,10 @@ public class UserHandler implements Runnable {
         return read;
     }
 
+    public Socket getServerSocket() {
+        return serverSocket;
+    }
+
     /**
      * returns connection state
      *
@@ -99,8 +103,10 @@ public class UserHandler implements Runnable {
      */
     public void dispatchMessage(String message) {
         try {
-            write.writeBytes(message + "\n");
-            write.flush();
+            if (write != null) {
+                write.writeBytes(message + "\n");
+                write.flush();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -311,6 +317,13 @@ public class UserHandler implements Runnable {
         try {
             while (serverSocket.isBound()) {
                 lineRead = read.readLine();
+                if(lineRead == null){
+                    list.remove(this);
+                    read.close();
+                    write.close();
+                    serverSocket.close();
+                    return;
+                }
                 chatCommands();
             }
             read.close();
