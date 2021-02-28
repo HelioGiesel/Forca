@@ -58,7 +58,7 @@ public class Game {
 
         if (!multiplayer) {
             soloGame();
-        } else{
+        } else {
             multiplayerGame();
         }
 
@@ -126,7 +126,6 @@ public class Game {
 
             players.get(i-1).dispatchMessage("\n");
             players.get(i-1).startMenu();
-
 
         }
     }
@@ -316,7 +315,7 @@ public class Game {
                     break;
                 }
 
-                if ((charGuessed = players.get(counter).getRead().readLine()) == null){
+                if ((charGuessed = players.get(counter).getRead().readLine().toLowerCase()) == null){
                     break;
                 }
 

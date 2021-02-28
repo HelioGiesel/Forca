@@ -304,8 +304,7 @@ public class UserHandler implements Runnable {
     public void startMenu() {
         try {
 
-            write.writeBytes(Color.GREEN_BOLD + "Please enter your message \n" + Color.RESET);
-
+            write.writeBytes(Color.GREEN_BOLD + "Please enter your command. Type /help for commands \n" + Color.RESET);
 
         } catch (IOException io) {
             System.out.println("Caseiro yo yo");
