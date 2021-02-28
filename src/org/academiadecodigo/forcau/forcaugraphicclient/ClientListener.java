@@ -100,7 +100,7 @@ public class ClientListener implements Runnable {
                     Thread.sleep(3000);
                     Picture youLost = new Picture(0,0,"resources/endgame.jpg");
                     youLost.draw();
-                    Thread.sleep(3000);
+                    Thread.sleep(10000);
                     System.exit(0);
 
                 }
@@ -108,9 +108,7 @@ public class ClientListener implements Runnable {
                 game.newMessageToConsole(lineRead);
             }
             catch (IOException e) {
-                e.printStackTrace();
             } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
     }

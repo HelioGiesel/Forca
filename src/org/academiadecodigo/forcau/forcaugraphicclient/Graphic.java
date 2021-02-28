@@ -15,7 +15,7 @@ public class Graphic {
     private int wrongGuessCounter;
     WordField wordField;
 
-    Graphic(int numOfCharacters) {
+    public Graphic(int numOfCharacters) {
 
         buildMainCanvas();
 
@@ -23,9 +23,9 @@ public class Graphic {
 
         this.keyboard = new KeyboardController(this);
 
-        userInputBox = new TextBox(475, 600, 350 , 40, "");
+        userInputBox = new TextBox(550, 600, 350, 40, "");
 
-        TextBox userSpaceSenderBox = new TextBox(475, 650, 350 , 40, "Send: SPACEBAR / Erase: LEFT ARROW");
+        TextBox userSpaceSenderBox = new TextBox(550, 650, 350, 40, "Send: SPACEBAR / Erase: LEFT ARROW");
         userSpaceSenderBox.drawChar();
 
         console = new Console();
@@ -104,63 +104,81 @@ public class Graphic {
 
     private void buildMainCanvas() {
 
-        Picture mainCanvas = new Picture(10,10, "resources/landscape.png");
+        Picture mainCanvas = new Picture(10, 10, "resources/landscape.png");
         mainCanvas.draw();
 
     }
 
     private void buildGallows() {
 
-        Picture gallows = new Picture(10,10, "resources/gallows.png");
+        Picture gallows = new Picture(10, 10, "resources/gallows.png");
         gallows.draw();
     }
 
     private void buildHead() {
 
-        Text head = new Text(180,220, "<head>");
-        head.grow(60,35);
+        int random = (int) (Math.random() * 4);
+        String caroca;
+
+        switch (random) {
+            case 0:
+                caroca = "resources/paulo.png";
+                break;
+            case 1:
+                caroca = "resources/ricardo.png";
+                break;
+            case 2:
+                caroca = "resources/sara.png";
+                break;
+            default:
+                caroca = "resources/vando.png";
+                break;
+        }
+
+        Picture head = new Picture(-65, -30, caroca);
+        head.grow(-140, -140);
         head.draw();
     }
 
     private void buildLeftBody() {
 
         Text leftBody = new Text(170, 320, "{");
-        leftBody.grow(20,80);
+        leftBody.grow(20, 80);
         leftBody.draw();
     }
 
     private void buildRightBody() {
 
         Text rightBody = new Text(220, 320, "}");
-        rightBody.grow(20,80);
+        rightBody.grow(20, 80);
         rightBody.draw();
     }
 
     private void buildLeftArm() {
 
         Text leftArm = new Text(140, 330, "/");
-        leftArm.grow(15,80);
+        leftArm.grow(15, 80);
         leftArm.draw();
     }
 
     private void buildRightArm() {
 
         Text RightArm = new Text(250, 330, "\\");
-        RightArm.grow(15,80);
+        RightArm.grow(15, 80);
         RightArm.draw();
     }
 
     private void buildLeftLeg() {
 
         Text leftLeg = new Text(170, 450, "(");
-        leftLeg.grow(15,80);
+        leftLeg.grow(15, 80);
         leftLeg.draw();
     }
 
     private void buildPicinha() {
 
         Text mainMember = new Text(195, 405, "'|'");
-        mainMember.grow(10,10);
+        mainMember.grow(10, 10);
         mainMember.setColor(Color.PINK);
         mainMember.draw();
     }
@@ -168,7 +186,7 @@ public class Graphic {
     private void buildRightLeg() {
 
         Text RightLeg = new Text(215, 450, ")");
-        RightLeg.grow(15,80);
+        RightLeg.grow(15, 80);
         RightLeg.draw();
     }
 
