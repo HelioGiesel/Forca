@@ -71,7 +71,7 @@ public class ClientListener implements Runnable {
 
                 if (lineRead.contains("[0;") || lineRead.contains("[1;")) lineRead = lineRead.substring(lineRead.indexOf("m") + 1);
 
-                if (lineRead.contains("[0m")) lineRead = lineRead.substring(0, lineRead.indexOf("[") - 2);
+                if (lineRead.contains("[0m")) lineRead = lineRead.substring(0, lineRead.indexOf("[") - 1);
 
                 if (lineRead.contains("found")) {
                     game.newMessageToConsole(lineRead);

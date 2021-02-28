@@ -1,5 +1,6 @@
 package org.academiadecodigo.forcau.forcaugraphicclient;
 
+import org.academiadecodigo.simplegraphics.graphics.Color;
 import org.academiadecodigo.simplegraphics.graphics.Rectangle;
 import org.academiadecodigo.simplegraphics.graphics.Text;
 
@@ -16,7 +17,8 @@ public class TextBox {
         this.rectangle = new Rectangle(x, y, width, height);
         this.textShape = new Text(x + 12, y + 15, text);
 
-        rectangle.draw();
+        rectangle.setColor(Color.LIGHT_GRAY);
+        rectangle.fill();
     }
 
     public void setTextShape(String text) {
