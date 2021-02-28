@@ -205,10 +205,10 @@ public class UserHandler implements Runnable {
                 input = read.readLine();
                 switch (input) {
                     case "1":
-                        Game.setListPath("resources/foulWordsList.txt");
+                        Game.setChooser(true);
                         break;
                     case "2":
-                        Game.setListPath("resources/ac_mode.txt");
+                        Game.setChooser(false);
                         break;
                     default:
                         write.writeBytes(Color.RED_BOLD + "Please select option 1 or 2.\n" + Color.RESET);
