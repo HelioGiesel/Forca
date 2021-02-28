@@ -25,13 +25,20 @@ public class ClientListener implements Runnable {
             e.printStackTrace();
         }
 
-        while (true) {
+        while (!socket.isClosed()) {
             try {
                 lineRead = read.readLine();
-                System.out.println(lineRead);
-            }
-            catch (IOException e) {
-                e.printStackTrace();
+                if (lineRead != null) {
+
+                    System.out.println(lineRead);
+
+                } else {
+
+                    System.out.println("Connection closed, exiting...");
+                    read.close();
+                    socket.close();
+                }
+            }catch (IOException e) {
             }
         }
 

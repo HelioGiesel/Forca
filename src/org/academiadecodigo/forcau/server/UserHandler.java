@@ -62,6 +62,10 @@ public class UserHandler implements Runnable {
         return read;
     }
 
+    public Socket getServerSocket() {
+        return serverSocket;
+    }
+
     /**
      * returns connection state
      *
@@ -99,10 +103,11 @@ public class UserHandler implements Runnable {
      */
     public void dispatchMessage(String message) {
         try {
-            write.writeBytes(message + "\n");
-            write.flush();
+            if (write != null) {
+                write.writeBytes(message + "\n");
+                write.flush();
+            }
         } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -235,15 +240,17 @@ public class UserHandler implements Runnable {
 
         if (game != null) {
             if (game.join(this)) {
-                broadCast(this.name + " joined game.");
+                systemMessage(this.name + " joined game. " + Game.players.size() + " players ready to start");
                 try {
                     Thread.sleep(5000);
+
+                    while (game.start) {
+                        Thread.sleep(10);
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                while(game.start){
-
-                }
+                System.out.println("SAIO DO WHILE");
                 return;
             }
             dispatchMessage("Game already started. Please wait!");
@@ -269,27 +276,29 @@ public class UserHandler implements Runnable {
 
     @Override
     public void run() {
+        if (serverSocket.isBound()) {
             beginServer();
+        }
     }
 
     public void beginServer() {
 
 
-            try {
-                read = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
-                write = new DataOutputStream(serverSocket.getOutputStream());
+        try {
+            read = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
+            write = new DataOutputStream(serverSocket.getOutputStream());
 
-                write.writeBytes(Color.GREEN + "Connection established \n" + Color.RESET);
-                write.writeBytes(Color.GREEN + "/help to see available commands \n" + Color.RESET);
-                write.writeBytes("Please setup your username \n");
-                setUserName();
-                startMenu();
-                logicMenu();
+            write.writeBytes(Color.GREEN + "Connection established \n" + Color.RESET);
+            write.writeBytes(Color.GREEN + "/help to see available commands \n" + Color.RESET);
+            write.writeBytes("Please setup your username \n");
+            setUserName();
+            startMenu();
+            logicMenu();
 
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void startMenu() {
@@ -299,7 +308,7 @@ public class UserHandler implements Runnable {
 
 
         } catch (IOException io) {
-            System.out.println("Caseio yo yo");
+            System.out.println("Caseiro yo yo");
         }
 
     }
@@ -309,14 +318,22 @@ public class UserHandler implements Runnable {
         try {
             while (serverSocket.isBound()) {
                 lineRead = read.readLine();
+                if (lineRead == null) {
+                    list.remove(this);
+                    Game.players.remove(this);
+                    serverSocket.close();
+                    read.close();
+                    write.close();
+                    read = null;
+                    write = null;
+                    return;
+                }
                 chatCommands();
             }
             read.close();
             write.close();
             serverSocket.close();
-        } catch (
-                IOException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
         }
     }
 }
