@@ -35,8 +35,11 @@ public class ClientListener implements Runnable {
         while (!clientMain.isStarted()) {
             try {
                 lineRead = read.readLine();
+
+                System.out.println(lineRead);
+
                 if (lineRead != null) {
-                    System.out.println(lineRead);
+
                     if (lineRead.contains("characters")) {
                         System.out.println("entrou if" + lineRead.split(" ")[3]);
                         int numOfCharacters = Integer.parseInt(lineRead.split(" ")[3]);

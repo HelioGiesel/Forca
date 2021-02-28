@@ -106,7 +106,7 @@ public class Graphic {
 
     private void buildGallows() {
 
-        Picture gallows = new Picture(10,10, "Resources/gallows.png");
+        Picture gallows = new Picture(10,10, "resources/gallows.png");
         gallows.draw();
     }
 

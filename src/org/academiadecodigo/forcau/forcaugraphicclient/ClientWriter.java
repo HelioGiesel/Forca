@@ -2,6 +2,7 @@ package org.academiadecodigo.forcau.forcaugraphicclient;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class ClientWriter implements Runnable {
     //Fields
@@ -11,11 +12,13 @@ public class ClientWriter implements Runnable {
     private TextBox userInput;
     private Client clientMain;
     private Graphic game;
+    private Scanner input;
 
     //Constructor
     public ClientWriter(Socket socket, Client clientMain) {
         this.socket = socket;
         this.clientMain = clientMain;
+        input = new Scanner(System.in);
     }
 
     public void setGraphicsHandler(Graphic game) {
@@ -51,31 +54,23 @@ public class ClientWriter implements Runnable {
 
     @Override
     public void run() {
-
-        BufferedReader in;
-
+        System.out.println("Entrou no run");
         try {
             write = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        while (clientMain.isStarted()) {
-            try {
-                in = new BufferedReader(new InputStreamReader(System.in));
-                String sentence = null;
+        System.out.println("Passou do write");
 
-                sentence = in.readLine();
+        while(true) {
+            System.out.println("Entrou no while da root");
+            String sentence = input.nextLine();
+            System.out.println(sentence + " Deu certo miseria!");
+            write.println(sentence);
 
-                write.println(sentence);
+            write.flush();
 
-                write.flush();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
-
-        System.out.println("saiu caraio");
     }
 }
