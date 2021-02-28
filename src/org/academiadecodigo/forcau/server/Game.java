@@ -11,20 +11,20 @@ import java.util.*;
 public class Game {
 
     private LinkedList<UserHandler> players;
-    private boolean multiplayer;
-    private boolean start;
-    private List<String> map;
-    private String word;
-    private String[] wordChars;
-    private String tips;
-    private DataOutputStream write;
-    private BufferedReader read;
-    private String underscores;
-    private final int maxTries = 10;
-    private int charactersGuessed = 0;
-    private int tries = 0;
-    private String charactersNotGuessed = "";
     private HashSet<String> usedCharacters;
+    private List<String> map;
+    private String[] wordChars;
+    private String word;
+    private String tips;
+    private String underscores;
+    private String charactersNotGuessed = "";
+    private String charGuessed;
+    private final int maxTries = 10;
+    private int tries = 0;
+    private int charactersGuessed = 0;
+    private boolean start;
+    private boolean multiplayer;
+    private UserHandler p1;
 
     /**
      * Creates game and adds first player
@@ -35,19 +35,20 @@ public class Game {
      * @param multiplayer
      */
     public Game(UserHandler firstPlayer, boolean multiplayer) {
-        System.out.println("Entered Game");
+
         players = new LinkedList<>();
         players.add(firstPlayer);
         this.multiplayer = multiplayer;
-        write = firstPlayer.getWrite();
-        read = firstPlayer.getRead();
         map = new ArrayList<>();
         usedCharacters = new HashSet<>();
+        p1 = players.get(0);
         start();
+
     }
 
     public void start() {
-        UserHandler p1 = players.get(0);
+
+
         readfile();
         p1.systemMessage(Color.PURPLE_BOLD + "The word has " + randomWord() + " characters." + Color.RESET);
         p1.systemMessage(Color.PURPLE_BOLD + underscores + Color.RESET);
@@ -55,7 +56,7 @@ public class Game {
         //First try
         while (charactersGuessed < word.length() && tries < maxTries) {
             try {
-                String charGuessed = "";
+                charGuessed = "";
 
                 if (charactersNotGuessed.equals("")) {
                     p1.systemMessage(Color.CYAN + p1.getName() + " pick a character" + Color.RESET);
@@ -66,62 +67,66 @@ public class Game {
                 charGuessed = p1.getRead().readLine();
                 p1.systemMessage(Color.YELLOW + p1.getName() + " tried " + charGuessed + "." + Color.RESET);
 
-                if (charGuessed.equals(word)) {
-                    p1.systemMessage("\n" + Color.GREEN_BOLD + players.get(0).getName() + " you have won bro." + Color.RESET);
-                    break;
+                if (correctAwnser()){
+                  break;
                 }
 
-                if (!usedCharacters.add(charGuessed)) {
-                    p1.systemMessage(Color.RED + p1.getName() + " that character has already been tried bro." + Color.RESET);
+                if (alreadyTried()){
                     continue;
                 }
+
                 checkChar(charGuessed);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
 
-        if (charactersGuessed == word.length()) {
-            players.get(0).systemMessage("\n" + Color.GREEN_BOLD + players.get(0).getName() + " you have won bro." + Color.RESET);
-        } else if (tries == maxTries) {
-            players.get(0).systemMessage("\n" + Color.RED_BOLD + players.get(0).getName() + " you have failed bro! iei" + Color.RESET);
-            p1.systemMessage(Color.RED_BOLD + "The word was: " + word + Color.RESET);
-        }
-
+        gameFinal();
         restart();
+
     }
 
     public void restart() {
+
         for (int i = players.size(); i >= 0; i--) {
             players.remove(players.get(i));
         }
+
         tries = 0;
         charactersGuessed = 0;
+
     }
 
     public void checkChar(String charGuessed) {
+
         if (word.contains(charGuessed)) {
             boolean[] hiddenLetters = new boolean[word.length()];
+
             for (int i = 0; i < wordChars.length; i++) {
                 if (wordChars[i].equals(charGuessed)) {
                     hiddenLetters[i] = true;
                     charactersGuessed++;
                 }
             }
+
             displayLetter(hiddenLetters, charGuessed);
             players.get(0).systemMessage(Color.GREEN + "Character " + charGuessed + " found!\n" + underscores + Color.RESET);
+
         } else {
             players.get(0).systemMessage(Color.RED + charGuessed + " is not on the word bro :(" + Color.RESET);
             charactersNotGuessed += charGuessed + ", ";
             tries++;
         }
+
     }
 
     public boolean join(UserHandler newPlayer) {
+
         if (start) return false;
         players.add(newPlayer);
         return true;
+
     }
 
     /**
@@ -136,6 +141,7 @@ public class Game {
             String line;
 
             while ((line = bufferedReader.readLine()) != null) {
+
                 String dica = "";
                 String[] split = line.split(" ");
 
@@ -149,6 +155,7 @@ public class Game {
 
                 map.add(line.split(" ")[0]);
                 map.add(dica);
+
             }
 
         } catch (IOException ioException) {
@@ -173,12 +180,13 @@ public class Game {
         underscores();
         return word.length();
 
-
     }
 
     private void underscores() {
         underscores = "";
+
         for (int i = 0; i < word.length(); i++) {
+
             if (i == word.length() - 1) {
                 underscores += "_";
                 return;
@@ -188,7 +196,9 @@ public class Game {
     }
 
     private void displayLetter(boolean[] hiddenLetters, String charGuessed) {
+
         char[] underToChar = underscores.toCharArray();
+
         for (int i = 0; i < hiddenLetters.length; i++) {
             if (hiddenLetters[i]) {
                 underToChar[i * 2] = charGuessed.charAt(0);
@@ -196,5 +206,32 @@ public class Game {
         }
         underscores = String.valueOf(underToChar);
     }
+    private boolean correctAwnser(){
 
+        if (charGuessed.equals(word)) {
+            p1.systemMessage("\n" + Color.GREEN_BOLD + players.get(0).getName() + " you have won bro." + Color.RESET);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean alreadyTried(){
+
+        if (!usedCharacters.add(charGuessed)) {
+            p1.systemMessage(Color.RED + p1.getName() + " that character has already been tried bro." + Color.RESET);
+            return true;
+        }
+        return false;
+    }
+
+    private void gameFinal(){
+
+        if (charactersGuessed == word.length()) {
+            players.get(0).systemMessage("\n" + Color.GREEN_BOLD + players.get(0).getName() + " you have won bro." + Color.RESET);
+        } else if (tries == maxTries) {
+            players.get(0).systemMessage("\n" + Color.RED_BOLD + players.get(0).getName() + " you have failed bro! iei" + Color.RESET);
+            p1.systemMessage(Color.RED_BOLD + "The word was: " + word + Color.RESET);
+        }
+
+    }
 }

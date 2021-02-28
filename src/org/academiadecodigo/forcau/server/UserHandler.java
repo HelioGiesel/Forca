@@ -11,13 +11,13 @@ public class UserHandler implements Runnable {
     //Fields
     private final LinkedList<UserHandler> list;
     private final Socket serverSocket;
+    private Scanner userName;
+    private String currentColor = Color.BLUE;
+    private String lineRead = "";
+    private String name;
     private DataOutputStream write;
     private BufferedReader read;
-    private Scanner userName;
-    private String lineRead = "";
     private boolean isUserNameSet;
-    private String name;
-    private String currentColor = Color.BLUE;
     Game game;
 
 
@@ -55,19 +55,9 @@ public class UserHandler implements Runnable {
     public DataOutputStream getWrite() {
         return write;
     }
-
-    public void setWrite(DataOutputStream write) {
-        this.write = write;
-    }
-
     public BufferedReader getRead() {
         return read;
     }
-
-    public void setRead(BufferedReader read) {
-        this.read = read;
-    }
-
     /**
      * returns connection state
      *
@@ -145,25 +135,6 @@ public class UserHandler implements Runnable {
             e.printStackTrace();
         }
     }
-
-    /**
-     * receives string and change user's text color
-     *
-     * @param color
-     */
-    private void setColor(String color) {
-        switch (color) {
-            case "BLACK " -> currentColor = Color.BLACK;
-            case "RED " -> currentColor = Color.RED;
-            case "GREEN " -> currentColor = Color.GREEN;
-            case "YELLOW " -> currentColor = Color.YELLOW;
-            case "BLUE " -> currentColor = Color.BLUE;
-            case "PURPLE " -> currentColor = Color.PURPLE;
-            case "CYAN " -> currentColor = Color.CYAN;
-            case "WHITE " -> currentColor = Color.WHITE;
-        }
-    }
-
     /**
      * receives "raw" message and removed the user's command tag
      *
@@ -187,9 +158,6 @@ public class UserHandler implements Runnable {
             switch (lineRead.split(" ")[0]) {
                 case "/help":
                     help();
-                    break;
-                case "/setColor":
-                    setColor(removeCommandTag(lineRead));
                     break;
                 case "/participants":
                     printOnlineUsers();
@@ -219,7 +187,6 @@ public class UserHandler implements Runnable {
                 switch (input) {
                     case "1":
                         startSoloGame();
-//                        broadCast();
                         break;
                     case "2":
                         startMultiGame();
@@ -280,8 +247,6 @@ public class UserHandler implements Runnable {
         public void help () {
             try {
                 write.writeBytes("/help for help \n" +
-                        "/setColor <color> for colors - Available Colors: \n" +
-                        "BLACK -- RED -- GREEN -- YELLOW -- BLUE -- PURPLE -- CYAN -- WHITE\n" +
                         "/participants to see online users \n" +
                         "/pm/<name> for private message \n" +
                         "/broadcast to enter broadcast mode\n" +
