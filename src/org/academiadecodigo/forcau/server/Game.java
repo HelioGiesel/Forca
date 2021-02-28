@@ -9,7 +9,7 @@ import java.util.*;
 
 public class Game {
 
-    private Vector<UserHandler> players;
+    public static Vector<UserHandler> players;
     private HashSet<String> usedCharacters;
     private List<String> map;
     private String[] wordChars;
@@ -18,9 +18,10 @@ public class Game {
     private String underscores;
     private String charactersNotGuessed = "";
     private String charGuessed;
-    private final int maxTries = 10;
+    private final int maxTries = 9;
     private int tries = 0;
     private int charactersGuessed = 0;
+    private int counter = 0;
     public boolean start;
     private boolean multiplayer;
     private UserHandler p1;
@@ -98,7 +99,7 @@ public class Game {
             p1.broadCast(Color.RED_BOLD + "Game didn't had enough players to start." + Color.RESET);
             restart();
             return;
-        }else {
+        } else {
             p1.systemMessage(Color.GREEN_BOLD + "Game started BRO" + Color.RESET+ "\n");
         }
 
@@ -108,7 +109,7 @@ public class Game {
         p1.systemMessage(Color.PURPLE_BOLD + underscores + Color.RESET);
 
         gameLogic();
-        gameFinal();
+        resetProperties();
         restart();
     }
 
@@ -244,8 +245,7 @@ public class Game {
     private boolean correctAnswer(){
 
         if (charGuessed.equals(word)) {
-            p1.systemMessage("\n" + Color.GREEN_BOLD + players.get(0).getName() + " you have won bro." + Color.RESET);
-            restart();
+            p1.systemMessage("\n" + Color.GREEN_BOLD + players.get(counter).getName() + " you have won bro." + Color.RESET);
             start = false;
             return true;
         }
@@ -266,13 +266,12 @@ public class Game {
     private void gameFinal(){
 
         if (charactersGuessed == word.length()) {
-            players.get(0).systemMessage("\n" + Color.GREEN_BOLD + players.get(0).getName() + " you have won bro." + Color.RESET);
+            players.get(0).systemMessage("\n" + Color.GREEN_BOLD + players.get(counter).getName() + " you have won bro." + Color.RESET);
         } else if (tries == maxTries) {
             players.get(0).systemMessage("\n" + Color.RED_BOLD + players.get(0).getName() + " you have failed bro! iei" + Color.RESET);
             p1.systemMessage(Color.RED_BOLD + "The word was: " + word + Color.RESET);
         }
 
-        resetProperties();
 
 
     }
@@ -290,55 +289,49 @@ public class Game {
     }
 
     private void gameLogic(){
-        int counter = 0;
 
         while (charactersGuessed < word.length() && tries < maxTries) {
-//            try {
-//                if(players.get(counter).getRead().readLine() == null){
-//                    players.remove(counter);
-//                    if(counter == players.size() - 1 ){
-//                        counter = 0;
-//                    }
-//                    continue;
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+
             try {
                 charGuessed = "";
 
+                if (tries == 3){
+                    p1.systemMessage("\n" + Color.YELLOW_BOLD + "hint: " + tips + Color.RESET);
+                    tries++;
+                }
+
                 if (charactersNotGuessed.equals("")) {
                     p1.systemMessage(Color.CYAN + players.get(counter).getName() + " pick a character" + Color.RESET);
+                    System.out.println(p1.getServerSocket().isBound());
                 } else {
                     p1.systemMessage(Color.CYAN + players.get(counter).getName() + " pick a character. Already tried: " + charactersNotGuessed + Color.RESET);
                 }
-                charGuessed = players.get(counter).getRead().readLine();
-                if(charGuessed == null){
+
+                if(players.get(counter).getRead() == null){
                     players.remove(counter);
                     if(counter == players.size() - 1 ){
                         counter = 0;
                     }
-                    continue;
-                }
-                p1.systemMessage(Color.YELLOW + players.get(counter).getName() + " tried " + charGuessed + "." + Color.RESET);
-
-                if (correctAnswer()) {
                     break;
                 }
 
+                if ((charGuessed = players.get(counter).getRead().readLine()) == null){
+                    break;
+                }
+
+                p1.systemMessage(Color.YELLOW + players.get(counter).getName() + " tried " + charGuessed + "." + Color.RESET);
+
+                if (correctAnswer()) {
+                    return;
+                }
+
                 if (alreadyTried()) {
-
-                    if (counter < players.size() - 1){
-                        counter++;
-
-                    } else {
-                        counter = 0;
-                    }
 
                     continue;
                 }
 
                 checkChar(charGuessed);
+                gameFinal();
 
                 if (counter < players.size() - 1){
                     counter++;
@@ -347,7 +340,6 @@ public class Game {
                 }
 
             } catch (IOException e) {
-                e.printStackTrace();
             }
         }
     }
