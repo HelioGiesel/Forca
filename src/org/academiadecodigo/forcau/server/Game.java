@@ -25,6 +25,7 @@ public class Game {
     private boolean start;
     private boolean multiplayer;
     private UserHandler p1;
+    private static String listPath;
 
     /**
      * Creates game and adds first player
@@ -46,6 +47,12 @@ public class Game {
 
     }
 
+    //Setters
+    public static void setListPath(String newPath) {
+        listPath = newPath;
+    }
+
+    //Custom Methods
     public void start() {
 
 
@@ -136,7 +143,7 @@ public class Game {
 
         try {
 
-            FileReader fileReader = new FileReader("resources/caseironabo.txt");
+            FileReader fileReader = new FileReader(listPath);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             String line;
 

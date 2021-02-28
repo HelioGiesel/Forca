@@ -55,9 +55,11 @@ public class UserHandler implements Runnable {
     public DataOutputStream getWrite() {
         return write;
     }
+
     public BufferedReader getRead() {
         return read;
     }
+
     /**
      * returns connection state
      *
@@ -178,6 +180,7 @@ public class UserHandler implements Runnable {
      * game start with options
      */
     private void start() {
+        chooseWordsList();
         try {
             write.writeBytes(Color.RED_BOLD + "1. Solo game \n" + "2. Multiplayer game \n" + Color.RESET);
             write.flush();
@@ -200,6 +203,37 @@ public class UserHandler implements Runnable {
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
+    }
+
+    private void chooseWordsList(){
+        try{
+            write.writeBytes("1. Fabio Mode \n" + "2. Academy Mode \n");
+            write.flush();
+            String input = null;
+            while(input == null || !input.equals("1") && !input.equals("2")){
+                input = read.readLine();
+                switch (input){
+                    case "1":
+                        System.out.println("TESTE CASE 1");
+                        Game.setListPath("resources/foulWordsList.txt");
+                        System.out.println("TESTE CASE 1.1");
+                        break;
+                    case "2":
+                        System.out.println("TESTE CASE 2");
+                        Game.setListPath("resources/ac_mode.txt");
+                        System.out.println("TESTE CASE 2.1");
+                        break;
+                    default:
+                        write.writeBytes(Color.RED_BOLD + "Please select option 1 or 2.\n" + Color.RESET);
+                        write.flush();
+                        break;
+                }
+
+            }
+        } catch (IOException error){
+            error.printStackTrace();
+        }
+
     }
 
     private void startSoloGame() {
