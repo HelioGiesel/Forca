@@ -241,14 +241,12 @@ public class UserHandler implements Runnable {
         broadCast("Soloplayer game started by " + this.name + ".");
         game = new Game(this, false);
         vector.add(game);
-
     }
 
     private void startMultiGame() {
         broadCast("Multiplayer Game started by " + this.name + ". Type /join to join. You have 20 seconds.");
         game = new Game(this, true);
         vector.add(game);
-
     }
 
     /**

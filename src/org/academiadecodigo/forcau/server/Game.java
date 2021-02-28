@@ -3,7 +3,6 @@ package org.academiadecodigo.forcau.server;
 import org.academiadecodigo.forcau.Color;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -83,7 +82,7 @@ public class Game {
                 charGuessed = players.get(counter).getRead().readLine();
                 p1.systemMessage(Color.YELLOW + p1.getName() + " tried " + charGuessed + "." + Color.RESET);
 
-                if (correctAwnser()) {
+                if (correctAnswer()) {
                     break;
                 }
 
@@ -269,7 +268,7 @@ public class Game {
         underscores = String.valueOf(underToChar);
     }
 
-    private boolean correctAwnser(){
+    private boolean correctAnswer(){
 
         if (charGuessed.equals(word)) {
             p1.systemMessage("\n" + Color.GREEN_BOLD + players.get(0).getName() + " you have won bro." + Color.RESET);
