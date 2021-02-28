@@ -272,7 +272,20 @@ public class Game {
             p1.systemMessage(Color.RED_BOLD + "The word was: " + word + Color.RESET);
         }
 
+        resetProperties();
+
+
+    }
+
+    private void resetProperties(){
+        tries = 0;
+        charactersGuessed = 0;
+        charactersNotGuessed = "";
+        charGuessed = "";
         start = false;
+        map.clear();
+        usedCharacters.clear();
+        underscores = "";
 
     }
 

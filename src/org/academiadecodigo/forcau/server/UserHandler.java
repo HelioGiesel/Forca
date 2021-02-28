@@ -238,12 +238,14 @@ public class UserHandler implements Runnable {
                 broadCast(this.name + " joined game.");
                 try {
                     Thread.sleep(5000);
+
+                    while(game.start){
+                        Thread.sleep(10);
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                while(game.start){
-
-                }
+                System.out.println("SAIO DO WHILE");
                 return;
             }
             dispatchMessage("Game already started. Please wait!");
