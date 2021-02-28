@@ -97,9 +97,10 @@ public class ClientListener implements Runnable {
                 }
 
                 if (lineRead.contains("failed")) {
+                    Thread.sleep(3000);
                     Picture youLost = new Picture(0,0,"resources/endgame.jpg");
                     youLost.draw();
-                    Thread.sleep(4000);
+                    Thread.sleep(3000);
                     System.exit(0);
 
                 }
