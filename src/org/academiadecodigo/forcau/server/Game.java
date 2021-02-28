@@ -1,12 +1,11 @@
 package org.academiadecodigo.forcau.server;
 
-import org.academiadecodigo.forcau.server.UserHandler;
+import org.academiadecodigo.forcau.Color;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class Game {
@@ -25,6 +24,7 @@ public class Game {
     private int charactersGuessed = 0;
     private int tries = 0;
     private String charactersNotGuessed = "";
+    private HashSet<String> usedCharacters;
 
     /**
      * Creates game and adds first player
@@ -42,14 +42,15 @@ public class Game {
         write = firstPlayer.getWrite();
         read = firstPlayer.getRead();
         map = new ArrayList<>();
+        usedCharacters = new HashSet<>();
         start();
     }
 
     public void start() {
         UserHandler p1 = players.get(0);
         readfile();
-        p1.systemMessage("The word has " + randomWord() + " characters.");
-        p1.systemMessage(underscores);
+        p1.systemMessage(Color.PURPLE_BOLD + "The word has " + randomWord() + " characters." + Color.RESET);
+        p1.systemMessage(Color.PURPLE_BOLD + underscores + Color.RESET);
 
         //First try
         while (charactersGuessed < word.length() && tries < maxTries) {
@@ -57,26 +58,37 @@ public class Game {
                 String charGuessed = "";
 
                 if (charactersNotGuessed.equals("")) {
-                    p1.systemMessage(p1.getName() + " pick a character");
+                    p1.systemMessage(Color.CYAN + p1.getName() + " pick a character" + Color.RESET);
                 } else {
-                    p1.systemMessage(p1.getName() + " pick a character. Already tried: " + charactersNotGuessed );
+                    p1.systemMessage(Color.CYAN + p1.getName() + " pick a character. Already tried: " + charactersNotGuessed + Color.RESET);
                 }
+
                 charGuessed = p1.getRead().readLine();
-                p1.systemMessage(p1.getName() + " tried " + charGuessed + ".");
-                if (underscores.contains(charGuessed)) {
-                    p1.systemMessage(p1.getName() + " that character has already been tried bro.");
+                p1.systemMessage(Color.YELLOW + p1.getName() + " tried " + charGuessed + "." + Color.RESET);
+
+                if (charGuessed.equals(word)) {
+                    p1.systemMessage("\n" + Color.GREEN_BOLD + players.get(0).getName() + " you have won bro." + Color.RESET);
+                    break;
+                }
+
+                if (!usedCharacters.add(charGuessed)) {
+                    p1.systemMessage(Color.RED + p1.getName() + " that character has already been tried bro." + Color.RESET);
                     continue;
                 }
                 checkChar(charGuessed);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
         }
+
         if (charactersGuessed == word.length()) {
-            players.get(0).systemMessage(players.get(0).getName() + " you have won bro.");
-        } else {
-            players.get(0).systemMessage(players.get(0).getName() + " you have failed bro! iei");
+            players.get(0).systemMessage("\n" + Color.GREEN_BOLD + players.get(0).getName() + " you have won bro." + Color.RESET);
+        } else if (tries == maxTries) {
+            players.get(0).systemMessage("\n" + Color.RED_BOLD + players.get(0).getName() + " you have failed bro! iei" + Color.RESET);
+            p1.systemMessage(Color.RED_BOLD + "The word was: " + word + Color.RESET);
         }
+
         restart();
     }
 
@@ -89,22 +101,22 @@ public class Game {
     }
 
     public void checkChar(String charGuessed) {
-        if(word.contains(charGuessed)){
+        if (word.contains(charGuessed)) {
             boolean[] hiddenLetters = new boolean[word.length()];
             for (int i = 0; i < wordChars.length; i++) {
-                if(wordChars[i].equals(charGuessed)){
+                if (wordChars[i].equals(charGuessed)) {
                     hiddenLetters[i] = true;
                     charactersGuessed++;
                 }
             }
             displayLetter(hiddenLetters, charGuessed);
-            players.get(0).systemMessage("Character " + charGuessed + " found!\n" + underscores);
+            players.get(0).systemMessage(Color.GREEN + "Character " + charGuessed + " found!\n" + underscores + Color.RESET);
         } else {
-                players.get(0).systemMessage(charGuessed + " is not on the word bro :(");
-                charactersNotGuessed += charGuessed + ", ";
-                tries++;
-            }
+            players.get(0).systemMessage(Color.RED + charGuessed + " is not on the word bro :(" + Color.RESET);
+            charactersNotGuessed += charGuessed + ", ";
+            tries++;
         }
+    }
 
     public boolean join(UserHandler newPlayer) {
         if (start) return false;
@@ -146,9 +158,10 @@ public class Game {
 
     /**
      * Pick a random word and generate underscore string
+     *
      * @return
      */
-    private int randomWord(){
+    private int randomWord() {
 
         int randomNumber = (int) (Math.random() * map.size());
         randomNumber = ((randomNumber % 2) == 0) ? randomNumber : randomNumber - 1;
@@ -163,7 +176,7 @@ public class Game {
 
     }
 
-    private void underscores(){
+    private void underscores() {
         underscores = "";
         for (int i = 0; i < word.length(); i++) {
             if (i == word.length() - 1) {
@@ -174,11 +187,11 @@ public class Game {
         }
     }
 
-    private void displayLetter(boolean[] hiddenLetters, String charGuessed){
+    private void displayLetter(boolean[] hiddenLetters, String charGuessed) {
         char[] underToChar = underscores.toCharArray();
         for (int i = 0; i < hiddenLetters.length; i++) {
-            if(hiddenLetters[i]){
-                underToChar[i*2] = charGuessed.charAt(0);
+            if (hiddenLetters[i]) {
+                underToChar[i * 2] = charGuessed.charAt(0);
             }
         }
         underscores = String.valueOf(underToChar);

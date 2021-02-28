@@ -28,7 +28,7 @@ public class ClientListener implements Runnable {
         while (true) {
             try {
                 lineRead = read.readLine();
-                System.err.println(lineRead);
+                System.out.println(lineRead);
             }
             catch (IOException e) {
                 e.printStackTrace();

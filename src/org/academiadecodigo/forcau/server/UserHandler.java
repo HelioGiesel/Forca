@@ -1,5 +1,7 @@
 package org.academiadecodigo.forcau.server;
 
+import org.academiadecodigo.forcau.Color;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.LinkedList;
@@ -15,17 +17,9 @@ public class UserHandler implements Runnable {
     private String lineRead = "";
     private boolean isUserNameSet;
     private String name;
-    private String currentColor = BLUE;
+    private String currentColor = Color.BLUE;
     Game game;
-    public static final String BLACK = "\033[0;30m";   // BLACK
-    public static final String RED = "\033[0;31m";     // RED
-    public static final String GREEN = "\033[0;32m";   // GREEN
-    public static final String YELLOW = "\033[0;33m";  // YELLOW
-    public static final String BLUE = "\033[0;34m";    // BLUE
-    public static final String PURPLE = "\033[0;35m";  // PURPLE
-    public static final String CYAN = "\033[0;36m";    // CYAN
-    public static final String WHITE = "\033[0;37m";   // WHITE
-    public static final String RESET = "\033[0m";  // Text Reset
+
 
     //Constructor
     public UserHandler(Socket serverSocket, LinkedList<UserHandler> list) {
@@ -127,7 +121,7 @@ public class UserHandler implements Runnable {
                 isUserNameSet = true;
                 name = userName.nextLine();
                 Thread.currentThread().setName(name);
-                write.writeBytes("welcome " + Thread.currentThread().getName() + "\n");
+                write.writeBytes(Color.GREEN_BOLD + "welcome " + Thread.currentThread().getName() + "\n" + Color.RESET);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -159,14 +153,14 @@ public class UserHandler implements Runnable {
      */
     private void setColor(String color) {
         switch (color) {
-            case "BLACK " -> currentColor = BLACK;
-            case "RED " -> currentColor = RED;
-            case "GREEN " -> currentColor = GREEN;
-            case "YELLOW " -> currentColor = YELLOW;
-            case "BLUE " -> currentColor = BLUE;
-            case "PURPLE " -> currentColor = PURPLE;
-            case "CYAN " -> currentColor = CYAN;
-            case "WHITE " -> currentColor = WHITE;
+            case "BLACK " -> currentColor = Color.BLACK;
+            case "RED " -> currentColor = Color.RED;
+            case "GREEN " -> currentColor = Color.GREEN;
+            case "YELLOW " -> currentColor = Color.YELLOW;
+            case "BLUE " -> currentColor = Color.BLUE;
+            case "PURPLE " -> currentColor = Color.PURPLE;
+            case "CYAN " -> currentColor = Color.CYAN;
+            case "WHITE " -> currentColor = Color.WHITE;
         }
     }
 
@@ -217,7 +211,7 @@ public class UserHandler implements Runnable {
      */
     private void start() {
         try {
-            write.writeBytes("1. Solo game \n" + "2. Multiplayer game \n");
+            write.writeBytes(Color.RED_BOLD + "1. Solo game \n" + "2. Multiplayer game \n" + Color.RESET);
             write.flush();
             String input = "lol";
             while(!input.equals("1") && !input.equals("2")) {
@@ -231,7 +225,7 @@ public class UserHandler implements Runnable {
                         startMultiGame();
                         break;
                     default:
-                        write.writeBytes("Please select option 1 or 2.\n");
+                        write.writeBytes(Color.RED_BOLD + "Please select option 1 or 2.\n" + Color.RESET);
                         write.flush();
                         break;
                 }
@@ -307,11 +301,11 @@ public class UserHandler implements Runnable {
                 read = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
                 write = new DataOutputStream(serverSocket.getOutputStream());
 
-                write.writeBytes(GREEN + "Connection established \n" + RESET);
-                write.writeBytes(GREEN + "/help to see available commands \n" + RESET);
+                write.writeBytes(Color.GREEN + "Connection established \n" + Color.RESET);
+                write.writeBytes(Color.GREEN + "/help to see available commands \n" + Color.RESET);
                 write.writeBytes("Please setup your username \n");
                 setUserName();
-                write.writeBytes("Please enter your message \n");
+                write.writeBytes(Color.GREEN_BOLD + "Please enter your message \n" + Color.RESET);
 
                 while (serverSocket.isBound()) {
                     lineRead = read.readLine();
