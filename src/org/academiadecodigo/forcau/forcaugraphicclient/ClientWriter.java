@@ -54,19 +54,15 @@ public class ClientWriter implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Entrou no run");
         try {
             write = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        System.out.println("Passou do write");
 
         while(true) {
-            System.out.println("Entrou no while da root");
             String sentence = input.nextLine();
-            System.out.println(sentence + " Deu certo miseria!");
             write.println(sentence);
 
             write.flush();

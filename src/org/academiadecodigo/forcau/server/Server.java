@@ -12,15 +12,15 @@ import java.util.concurrent.Executors;
 public class Server {
     //Fields
     private LinkedList<UserHandler> list;
-    private Vector<Game> vector;
     private ServerSocket serverSocket;
     private final ExecutorService fixedPool;
     private int portNumber;
+    private Game game;
 
     //Constructor
-    public Server(LinkedList<UserHandler> list, Vector<Game> vector) throws IOException {
+    public Server(LinkedList<UserHandler> list, Game game) throws IOException {
         this.list = list;
-        this.vector = vector;
+        this.game = game;
         serverSocket = new ServerSocket(setPortNumber());
         fixedPool = Executors.newFixedThreadPool(10);
         start();
@@ -33,7 +33,7 @@ public class Server {
         while (serverSocket.isBound()) {
             try {
                 System.out.println("Waiting for a Client connection on PortNumber " + portNumber);
-                UserHandler userHandler = new UserHandler(serverSocket.accept(), list,vector);
+                UserHandler userHandler = new UserHandler(serverSocket.accept(), list,game);
                 fixedPool.submit(userHandler);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -45,7 +45,7 @@ public class Server {
     public static void main(String[] args) {
         try {
             LinkedList<UserHandler> list = new LinkedList<>();
-            Vector<Game> game = new Vector<>();
+            Game game = new Game();
             Server server = new Server(list,game);
         } catch (IOException e) {
             e.printStackTrace();

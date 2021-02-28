@@ -6,12 +6,11 @@ import java.io.*;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.Scanner;
-import java.util.Vector;
 
 public class UserHandler implements Runnable {
+
     //Fields
     private LinkedList<UserHandler> list;
-    private Vector<Game> vector;
     private Socket serverSocket;
     private Scanner userName;
     private String currentColor = Color.BLUE;
@@ -20,14 +19,14 @@ public class UserHandler implements Runnable {
     private DataOutputStream write;
     private BufferedReader read;
     private boolean isUserNameSet;
-    Game game;
+    private Game game;
 
 
     //Constructor
-    public UserHandler(Socket serverSocket, LinkedList<UserHandler> list, Vector<Game> vector) {
+    public UserHandler(Socket serverSocket, LinkedList<UserHandler> list, Game game) {
         this.list = list;
         this.serverSocket = serverSocket;
-        this.vector = vector;
+        this.game = game;
         try {
             userName = new Scanner(serverSocket.getInputStream());
             list.add(this);
@@ -221,28 +220,30 @@ public class UserHandler implements Runnable {
 
     private void startSoloGame() {
         broadCast("Soloplayer game started by " + this.name + ".");
-        game = new Game(this, false);
-        game.start();
+        game.start(this, false);
     }
 
     private void startMultiGame() {
         broadCast("Multiplayer Game started by " + this.name + ". Type /join to join. You have 20 seconds.");
-        game = new Game(this, true);
-        vector.add(game);
-        game.start();
+        game.start(this, true);
     }
 
     /**
      * user join game
      */
     private void join() {
-        System.out.println("teste");
-        System.out.println(vector.size());
-        if (vector.size() != 0) {
-            System.out.println("teste vector null");
-            if (vector.get(0).join(this)) {
-                System.out.println("teste vector join");
+
+        if (game != null) {
+            if (game.join(this)) {
                 broadCast(this.name + " joined game.");
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                while(game.start){
+
+                }
                 return;
             }
             dispatchMessage("Game already started. Please wait!");
@@ -268,39 +269,31 @@ public class UserHandler implements Runnable {
 
     @Override
     public void run() {
-
-        beginServer();
-        startMenu();
-
+            beginServer();
     }
 
     public void beginServer() {
 
-        try {
 
-            read = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
-            write = new DataOutputStream(serverSocket.getOutputStream());
+            try {
+                read = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
+                write = new DataOutputStream(serverSocket.getOutputStream());
 
-            write.writeBytes(Color.GREEN + "Connection established \n" + Color.RESET);
-            write.writeBytes(Color.GREEN + "/help to see available commands \n" + Color.RESET);
-            write.writeBytes("Please setup your username \n");
-            setUserName();
-            startMenu();
-            logicMenu();
+                write.writeBytes(Color.GREEN + "Connection established \n" + Color.RESET);
+                write.writeBytes(Color.GREEN + "/help to see available commands \n" + Color.RESET);
+                write.writeBytes("Please setup your username \n");
+                setUserName();
+                startMenu();
+                logicMenu();
 
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
     }
 
     public void startMenu() {
         try {
-
-            if (vector != null) {
-                vector.clear();
-            }
 
             write.writeBytes(Color.GREEN_BOLD + "Please enter your message \n" + Color.RESET);
 
@@ -315,7 +308,6 @@ public class UserHandler implements Runnable {
         try {
             while (serverSocket.isBound()) {
                 lineRead = read.readLine();
-                //System.out.println(lineRead);
                 chatCommands();
             }
             read.close();

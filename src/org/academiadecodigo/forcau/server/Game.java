@@ -9,7 +9,7 @@ import java.util.*;
 
 public class Game {
 
-    private LinkedList<UserHandler> players;
+    private Vector<UserHandler> players;
     private HashSet<String> usedCharacters;
     private List<String> map;
     private String[] wordChars;
@@ -21,7 +21,7 @@ public class Game {
     private final int maxTries = 10;
     private int tries = 0;
     private int charactersGuessed = 0;
-    private boolean start;
+    public boolean start;
     private boolean multiplayer;
     private UserHandler p1;
     private static String listPath;
@@ -34,14 +34,10 @@ public class Game {
      * @param firstPlayer
      * @param multiplayer
      */
-    public Game(UserHandler firstPlayer, boolean multiplayer) {
+    public Game() {
 
-        players = new LinkedList<>();
-        players.add(firstPlayer);
-        this.multiplayer = multiplayer;
         map = new ArrayList<>();
         usedCharacters = new HashSet<>();
-        p1 = players.get(0);
         start = false;
 
     }
@@ -52,7 +48,12 @@ public class Game {
     }
 
     //Custom Methods
-    public void start() {
+    public void start(UserHandler firstPlayer, boolean multiplayer) {
+
+        players = new Vector<>();
+        players.add(firstPlayer);
+        this.multiplayer = multiplayer;
+        p1 = players.get(0);
 
         if (!multiplayer) {
             soloGame();
@@ -102,7 +103,7 @@ public class Game {
         }
 
         readfile();
-
+        start = true;
         p1.systemMessage(Color.PURPLE_BOLD + "The word has " + randomWord() + " characters." + Color.RESET);
         p1.systemMessage(Color.PURPLE_BOLD + underscores + Color.RESET);
 
@@ -157,7 +158,6 @@ public class Game {
             return false;
         }
 
-        System.out.println("oi");
         players.add(newPlayer);
         return true;
 
@@ -254,8 +254,10 @@ public class Game {
     private boolean alreadyTried(){
 
         if (!usedCharacters.add(charGuessed)) {
+
             p1.systemMessage(Color.RED + p1.getName() + " that character has already been tried bro." + Color.RESET);
             return true;
+
         }
         return false;
     }
@@ -269,10 +271,13 @@ public class Game {
             p1.systemMessage(Color.RED_BOLD + "The word was: " + word + Color.RESET);
         }
 
+        start = false;
+
     }
 
     private void gameLogic(){
         int counter = 0;
+
         while (charactersGuessed < word.length() && tries < maxTries) {
             try {
                 charGuessed = "";
@@ -282,7 +287,6 @@ public class Game {
                 } else {
                     p1.systemMessage(Color.CYAN + players.get(counter).getName() + " pick a character. Already tried: " + charactersNotGuessed + Color.RESET);
                 }
-
                 charGuessed = players.get(counter).getRead().readLine();
                 p1.systemMessage(Color.YELLOW + players.get(counter).getName() + " tried " + charGuessed + "." + Color.RESET);
 
@@ -306,7 +310,6 @@ public class Game {
 
                 if (counter < players.size() - 1){
                     counter++;
-
                 } else {
                     counter = 0;
                 }
@@ -316,7 +319,4 @@ public class Game {
             }
         }
     }
-
-
-
 }
