@@ -22,7 +22,6 @@ public class WordField {
 
     public void drawChar(int index, String guessedChar) {
         textBoxList[index].setTextShape(guessedChar);
-        textBoxList[index].drawChar();
     }
 
     public void deleteShapes(){

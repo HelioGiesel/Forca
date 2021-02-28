@@ -1,5 +1,6 @@
 package org.academiadecodigo.forcau.forcaugraphicclient;
 
+import org.academiadecodigo.simplegraphics.graphics.Color;
 import org.academiadecodigo.simplegraphics.graphics.Rectangle;
 
 import java.util.Iterator;
@@ -15,13 +16,14 @@ public class Console {
 
     private void buildConsole() {
 
-        Rectangle console = new Rectangle(500,20,400,560);
-        console.draw();
+        Rectangle console = new Rectangle(400,20,500,560);
+        console.setColor(Color.LIGHT_GRAY);
+        console.fill();
     }
 
     public void buildTextBox(String incomingMessage) {
 
-        TextBox textBox = new TextBox(520, 530, 360,40, incomingMessage);
+        TextBox textBox = new TextBox(420, 530, 460,40, incomingMessage);
 
         Iterator<TextBox> logListIterator = logList.listIterator();
         while (logListIterator.hasNext()) {

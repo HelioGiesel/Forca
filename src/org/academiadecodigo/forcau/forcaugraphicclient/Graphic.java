@@ -17,16 +17,16 @@ public class Graphic {
 
     Graphic(int numOfCharacters) {
 
-        this.keyboard = new KeyboardController(this);
-
-        userInputBox = new TextBox(500, 600, 400 , 40, "");
-
-        TextBox userSpaceSenderBox = new TextBox(575, 650, 250 , 40, "Send message with SPACEBAR");
-        userSpaceSenderBox.drawChar();
-
         buildMainCanvas();
 
         buildGallows();
+
+        this.keyboard = new KeyboardController(this);
+
+        userInputBox = new TextBox(475, 600, 350 , 40, "");
+
+        TextBox userSpaceSenderBox = new TextBox(475, 650, 350 , 40, "Send: SPACEBAR / Erase: LEFT ARROW");
+        userSpaceSenderBox.drawChar();
 
         console = new Console();
 
@@ -58,6 +58,10 @@ public class Graphic {
 
     public void appendCharToString(String message) {
         clientWriter.buildMessageString(message);
+    }
+
+    public void eraseMessageChar() {
+        clientWriter.eraseCharFromString();
     }
 
     public void newMessageToConsole(String message) {
@@ -100,8 +104,9 @@ public class Graphic {
 
     private void buildMainCanvas() {
 
-        Rectangle mainCanvas = new Rectangle(10, 10, 900, 700);
+        Picture mainCanvas = new Picture(10,10, "resources/landscape.png");
         mainCanvas.draw();
+
     }
 
     private void buildGallows() {

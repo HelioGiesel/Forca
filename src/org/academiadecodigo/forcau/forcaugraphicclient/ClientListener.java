@@ -1,5 +1,8 @@
 package org.academiadecodigo.forcau.forcaugraphicclient;
 
+import org.academiadecodigo.simplegraphics.pictures.Picture;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -41,11 +44,11 @@ public class ClientListener implements Runnable {
                 if (lineRead != null) {
 
                     if (lineRead.contains("characters")) {
-                        System.out.println("entrou if" + lineRead.split(" ")[3]);
+
                         int numOfCharacters = Integer.parseInt(lineRead.split(" ")[3]);
-                        System.out.println("passou int " + numOfCharacters);
+
                         clientMain.startGraphicGame(numOfCharacters);
-                        System.out.println("passou startGraphics");
+
                     }
                 }
 
@@ -66,22 +69,46 @@ public class ClientListener implements Runnable {
                     continue;
                 }
 
+                if (lineRead.contains("[0;") || lineRead.contains("[1;")) lineRead = lineRead.substring(lineRead.indexOf("m") + 1);
+
+                if (lineRead.contains("[0m")) lineRead = lineRead.substring(0, lineRead.indexOf("[") - 2);
+
                 if (lineRead.contains("found")) {
                     game.newMessageToConsole(lineRead);
                     lineRead = read.readLine();
+
+                    if (lineRead.contains("[0m")) lineRead = lineRead.substring(0, lineRead.indexOf("[") - 1);
+
                     String[] splitedWord = lineRead.split(" ");
                     for (int i = 0; i < splitedWord.length; i++) {
-                        System.out.println(splitedWord[i]);
-                        if (!splitedWord[i].equals("_")) {
+
+                        if (!splitedWord[i].contains("_")) {
                             game.wordField.drawChar(i, splitedWord[i]);
                         }
                     }
                     continue;
                 }
 
+                if (lineRead.contains("won")) {
+                    Picture youWon = new Picture(0,0,"resources/youwon.jpg");
+                    youWon.draw();
+                    Thread.sleep(5000);
+                    System.exit(0);
+                }
+
+                if (lineRead.contains("failed")) {
+                    Picture youLost = new Picture(0,0,"resources/endgame.jpg");
+                    youLost.draw();
+                    Thread.sleep(4000);
+                    System.exit(0);
+
+                }
+
                 game.newMessageToConsole(lineRead);
             }
             catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }

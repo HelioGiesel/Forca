@@ -22,7 +22,7 @@ public class KeyboardController implements KeyboardHandler {
     }
 
     public void initKeyboard(){
-        KeyboardEvent[] events = new KeyboardEvent[27];
+        KeyboardEvent[] events = new KeyboardEvent[28];
         for (int i = 0; i < events.length; i++) {
             events[i] = new KeyboardEvent();
             events[i].setKeyboardEventType(KeyboardEventType.KEY_PRESSED);
@@ -61,6 +61,7 @@ public class KeyboardController implements KeyboardHandler {
                 KeyboardEvent.KEY_Y,
                 KeyboardEvent.KEY_Z,
                 KeyboardEvent.KEY_SPACE,
+                KeyboardEvent.KEY_LEFT
         };
     }
 
@@ -147,6 +148,9 @@ public class KeyboardController implements KeyboardHandler {
                 break;
             case KeyboardEvent.KEY_SPACE:
                 game.sendClientMessage();
+                break;
+            case KeyboardEvent.KEY_LEFT:
+                game.eraseMessageChar();
                 break;
         }
     }

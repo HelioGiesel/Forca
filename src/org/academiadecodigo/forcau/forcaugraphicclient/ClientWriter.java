@@ -32,6 +32,13 @@ public class ClientWriter implements Runnable {
 
     }
 
+    public void eraseCharFromString() {
+        if (currentMessage != null && currentMessage.length() > 0) {
+            currentMessage = currentMessage.substring(0, currentMessage.length() - 1);
+            userInput.setTextShape(currentMessage);
+        }
+    }
+
     public void sendMessage() {
 
         try {
