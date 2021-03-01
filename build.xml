@@ -3,9 +3,9 @@
     
     <!-- Initialize build properties  -->
     <target name="init" description="Initializes properties">
-        <property name="project.name" value="ForcaUClient" />
+        <property name="project.name" value="ForcaUServer" />
         <property name="src.dir" value="src" />
-        <property name="main.class" value="org.academiadecodigo.forcau.forcaugraphicclient.Client" />
+        <property name="main.class" value="org.academiadecodigo.forcau.server.Server" />
         <property name="build.dir" value="build" />
         <property name="classes.dir" value="${build.dir}/classes" />
         <property name="lib.dir" value="lib" />

@@ -386,7 +386,7 @@ public class Game {
 
 
         for (int i = 0; i < dados2.length; i++) {
-            System.out.println(dados2[i]);
+         //   System.out.println(dados2[i]);
             String dica = "";
             String[] split = dados2[i].split(" ");
             map.add(split[0]);
@@ -513,7 +513,7 @@ public class Game {
 
                 if (charactersNotGuessed.equals("")) {
                     p1.systemMessage(Color.CYAN + players.get(counter).getName() + " pick a character" + Color.RESET);
-                    System.out.println(p1.getServerSocket().isBound());
+                  //  System.out.println(p1.getServerSocket().isBound());
                 } else {
                     p1.systemMessage(Color.CYAN + players.get(counter).getName() + " pick a character. Already tried: " + charactersNotGuessed + Color.RESET);
                 }
