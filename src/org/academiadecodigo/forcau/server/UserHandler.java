@@ -242,7 +242,7 @@ public class UserHandler implements Runnable {
             if (game.join(this)) {
                 systemMessage(this.name + " joined game. " + Game.players.size() + " players ready to start");
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(20000);
 
                     while (game.start) {
                         Thread.sleep(10);
