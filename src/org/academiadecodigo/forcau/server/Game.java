@@ -184,18 +184,18 @@ public class Game {
                     "fabio o demonio\n" +
                     "lucianno fiz o workshop no WC\n" +
                     "caseiro anonymous\n" +
-                    "hugo nao tenho carinho pelo codigo, <3 Margarida S2\n" +
+                    "hugo nao tenho carinho pelo codigo\n" +
                     "helio pontual\n" +
                     "almeida foi o meu sonho ser sub-delegado\n" +
                     "vania perdi para o sub-delegado\n" +
-                    "margarida monica, marlene, marta  H -> S2\n" +
-                    "leandro estou sempre de fato\n" +
+                    "margarida monica, marlene, marta\n" +
+                    "leandro clap master\n" +
                     "isaac fim-de-semana para descansar\n" +
                     "vasco ovni miau\n" +
                     "jb multa + homework + summarizer + trabalho = dream day\n" +
                     "barroso hamburgueres\n" +
-                    "dogaz para a prisao ao menos tenho sabonetes\n" +
-                    "gyosas colheres de merda\n" +
+                    "dogaz ao menos tenho sabonetes\n" +
+                    "gyosas colheres de conheshitmento\n" +
                     "patricia eu tenho uma filha de 4 anos\n" +
                     "luis usado em folha\n" +
                     "carlos torradeira\n" +
@@ -210,7 +210,7 @@ public class Game {
                     "mariana dancing-jesus-feelings-person\n" +
                     "paulo ojolhos e ajorelhas\n" +
                     "ricardo inho\n" +
-                    "vando master...ando (gerundio do verbo masturbar)\n";
+                    "vando master...ando\n";
             dados2 = dados.split("\n");
         } else {
             dados = "abysmal extremely bad.\n" +
@@ -386,7 +386,7 @@ public class Game {
 
 
         for (int i = 0; i < dados2.length; i++) {
-         //   System.out.println(dados2[i]);
+
             String dica = "";
             String[] split = dados2[i].split(" ");
             map.add(split[0]);

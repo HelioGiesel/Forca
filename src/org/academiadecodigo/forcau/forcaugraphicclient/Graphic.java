@@ -90,9 +90,6 @@ public class Graphic {
                 buildLeftLeg();
                 break;
             case 6:
-                buildPicinha();
-                break;
-            case 7:
                 buildRightLeg();
                 break;
             default:
@@ -117,26 +114,8 @@ public class Graphic {
 
     private void buildHead() {
 
-        int random = (int) (Math.random() * 4);
-        String caroca;
-
-        switch (random) {
-            case 0:
-                caroca = "resources/paulo.png";
-                break;
-            case 1:
-                caroca = "resources/ricardo.png";
-                break;
-            case 2:
-                caroca = "resources/sara.png";
-                break;
-            default:
-                caroca = "resources/vando.png";
-                break;
-        }
-
-        Picture head = new Picture(-65, -30, caroca);
-        head.grow(-140, -140);
+        Text head = new Text(183, 215, "<head>");
+        head.grow(90, 50);
         head.draw();
     }
 
@@ -173,14 +152,6 @@ public class Graphic {
         Text leftLeg = new Text(170, 450, "(");
         leftLeg.grow(15, 80);
         leftLeg.draw();
-    }
-
-    private void buildPicinha() {
-
-        Text mainMember = new Text(195, 405, "'|'");
-        mainMember.grow(10, 10);
-        mainMember.setColor(Color.PINK);
-        mainMember.draw();
     }
 
     private void buildRightLeg() {

@@ -48,7 +48,7 @@ public class Client {
     public void setPortNumber() {
         Scanner sysIn = new Scanner(System.in);
         do {
-            System.out.println("========= Welcome to ForcaU =========");
+            System.out.println("========= Welcome to Forca =========");
             System.out.print("Host: ");
             host = sysIn.nextLine();
             if (host.equals("1")) {
